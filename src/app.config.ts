@@ -2,7 +2,7 @@ export default {
   pages: [
     'pages/index/index',
     'pages/player/index',
-    'pages/social/index',
+    'pages/social/socialIndex',
     'pages/create-post/index',
     'pages/comments/index',
     'pages/profile/index',
@@ -26,7 +26,7 @@ export default {
         text: '首页'
       },
       {
-        pagePath: 'pages/social/index',
+        pagePath: 'pages/social/socialIndex',
         text: '社区'
       },
       {
