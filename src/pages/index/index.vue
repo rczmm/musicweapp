@@ -26,12 +26,12 @@
             <view class="free-listening-button">免费听歌模式</view>
           </view>
         </view>
-        
+
         <!-- 推荐网格 - 2x2布局 -->
         <view class="recommendation-grid">
-          <view 
-            class="grid-item" 
-            v-for="(item, index) in morningRecommendations" 
+          <view
+            class="grid-item"
+            v-for="(item, index) in morningRecommendations"
             :key="index"
             :style="{ '--index': index }"
             @tap="handleGridItemTap(item)"
@@ -54,12 +54,12 @@
         <view class="section-header">
           <text class="highlight">为你推荐的热门节目</text>
         </view>
-        
+
         <!-- 节目列表 - 垂直布局 -->
         <view class="program-list">
-          <view 
-            class="program-item" 
-            v-for="(item, index) in recommendedPrograms" 
+          <view
+            class="program-item"
+            v-for="(item, index) in recommendedPrograms"
             :key="index"
             :style="{ '--index': index }"
             @tap="handleProgramTap(item)"
@@ -80,9 +80,9 @@
       <view class="section">
         <view class="section-header">
           <view class="tag-list">
-            <view 
-              v-for="(tag, index) in hotTags" 
-              :key="index" 
+            <view
+              v-for="(tag, index) in hotTags"
+              :key="index"
               :class="['tag-item', { active: currentHotTag === tag.id }]"
               @tap="switchHotTag(tag.id)"
             >
@@ -90,13 +90,13 @@
             </view>
           </view>
         </view>
-        
+
         <!-- 歌曲列表 - 横向滑动 -->
         <view class="horizontal-song-list">
           <view class="song-list-container">
-            <view 
-              class="song-item" 
-              v-for="(item, index) in currentHotSongs" 
+            <view
+              class="song-item"
+              v-for="(item, index) in currentHotSongs"
               :key="index"
               :style="{ '--index': index }"
               @tap="handleSongTap(item)"
@@ -117,13 +117,13 @@
         <view class="section-header">
           <text class="highlight">推荐歌单</text>
         </view>
-        
+
         <!-- 播放列表横向滑动 -->
         <view class="horizontal-playlist">
           <view class="playlist-container">
-            <view 
-              class="playlist-item" 
-              v-for="(item, index) in recommendedPlaylists" 
+            <view
+              class="playlist-item"
+              v-for="(item, index) in recommendedPlaylists"
               :key="index"
               :style="{ '--index': index }"
               @tap="handlePlaylistTap(item)"
@@ -145,13 +145,13 @@
         <view class="section-header">
           <text class="highlight">根据你喜爱的歌曲推荐</text>
         </view>
-        
+
         <!-- 歌曲列表 - 横向滑动 -->
         <view class="horizontal-song-list">
           <view class="song-list-container">
-            <view 
-              class="song-item" 
-              v-for="(item, index) in recommendedSongs" 
+            <view
+              class="song-item"
+              v-for="(item, index) in recommendedSongs"
               :key="index"
               :style="{ '--index': index }"
               @tap="handleSongTap(item)"
@@ -172,28 +172,28 @@
         </view>
       </view>
     </view>
-    
+
     <!-- 迷你播放器组件 -->
-    <mini-player 
-      :song="currentPlayingSong" 
-      :playing="isPlaying" 
+    <mini-player
+      :song="currentPlayingSong"
+      :playing="isPlaying"
       :progress="playProgress"
       @play="handlePlay"
       @pause="handlePause"
       @showPlaylist="handleShowPlaylist"
     />
-    
+
     <nut-toast v-model:visible="show" :msg="msg" />
   </view>
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { 
-  Search as NutIconSearch, 
-  Heart as NutIconHeart, 
-  Plus as NutIconPlus, 
-  Voice as NutIconVoice 
+import {
+  Search as NutIconSearch,
+  Heart as NutIconHeart,
+  Plus as NutIconPlus,
+  Voice as NutIconVoice
 } from '@nutui/icons-vue-taro'
 // 导入迷你播放器组件
 import MiniPlayer from '../../components/MiniPlayer/index.vue'
@@ -235,16 +235,16 @@ const handleSongTap = (song) => {
     cover: song.cover,
     duration: song.duration || 240,
   }
-  
+
   // 开始播放
   isPlaying.value = true
   playProgress.value = 0 // 重置进度
   startProgressUpdate()
-  
+
   show.value = true
   msg.value = `正在播放: ${song.title}`
   console.log('播放歌曲:', song.title)
-  
+
   // 跳转到播放器页面
   Taro.navigateTo({
     url: `/pages/player/index?id=${song.id || ''}&title=${encodeURIComponent(song.title)}&artist=${encodeURIComponent(song.artist)}&cover=${encodeURIComponent(song.cover)}`
@@ -255,7 +255,7 @@ const handleSongTap = (song) => {
 const handlePlaylistTap = (playlist) => {
   show.value = true
   console.log('打开播放列表:', playlist.title)
-  
+
   // 跳转到播放列表详情页
   Taro.navigateTo({
     url: `/pages/playlist/index?id=${playlist.id || Math.random().toString(36).substr(2, 9)}&title=${encodeURIComponent(playlist.title)}`
@@ -439,7 +439,7 @@ const recommendedPrograms = ref([
 const handleGridItemTap = (item) => {
   show.value = true
   console.log('打开推荐内容:', item.title)
-  
+
   // 根据类型跳转到不同页面
   if (item.title.includes('每日推荐') || item.title.includes('新歌')) {
     // 跳转到歌单页面
@@ -463,10 +463,10 @@ const handleGridItemTap = (item) => {
 const handleProgramTap = (program) => {
   show.value = true
   console.log('打开节目:', program.title)
-  
+
   // 跳转到专辑页面
   Taro.navigateTo({
-    url: `/pages/album/index?id=${program.id || Math.random().toString(36).substr(2, 9)}&title=${encodeURIComponent(program.title)}`
+    url: `/pages/album/albumIndex?id=${program.id || Math.random().toString(36).substr(2, 9)}&title=${encodeURIComponent(program.title)}`
   })
 }
 
@@ -520,7 +520,7 @@ const handlePlay = () => {
   isPlaying.value = true
   // 这里可以添加实际的播放逻辑
   console.log('开始播放:', currentPlayingSong.value.title)
-  
+
   // 模拟播放进度更新
   startProgressUpdate()
 }
@@ -529,7 +529,7 @@ const handlePause = () => {
   isPlaying.value = false
   // 这里可以添加实际的暂停逻辑
   console.log('暂停播放:', currentPlayingSong.value.title)
-  
+
   // 停止进度更新
   stopProgressUpdate()
 }
@@ -552,7 +552,7 @@ const startProgressUpdate = () => {
   if (progressTimer) {
     clearInterval(progressTimer)
   }
-  
+
   // 创建新的定时器，每100毫秒更新一次进度
   progressTimer = setInterval(() => {
     // 增加进度，当达到1时重置为0
@@ -595,18 +595,18 @@ onUnmounted(() => {
   z-index: 100;
   box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
-  
+
   .menu-icon {
     font-size: 48rpx;
     margin-right: 10rpx;
     color: #fff;
     transition: transform 0.3s ease;
-    
+
     &:active {
       transform: scale(0.9);
     }
   }
-  
+
   .notification {
     background-color: #fff;
     color: #ff2c54;
@@ -615,12 +615,12 @@ onUnmounted(() => {
     border-radius: 20rpx;
     margin-right: 20rpx;
     transition: transform 0.3s ease;
-    
+
     &:active {
       transform: scale(0.9);
     }
   }
-  
+
   .search-input {
     flex: 1;
     display: flex;
@@ -629,11 +629,11 @@ onUnmounted(() => {
     border-radius: 36rpx;
     padding: 10rpx 20rpx;
     transition: background-color 0.3s ease;
-    
+
     &:active {
       background-color: rgba(255, 255, 255, 0.3);
     }
-    
+
     input {
       flex: 1;
       border: none;
@@ -641,22 +641,22 @@ onUnmounted(() => {
       margin-left: 10rpx;
       font-size: 28rpx;
       color: #fff;
-      
+
       &::placeholder {
         color: rgba(255, 255, 255, 0.8);
       }
     }
   }
-  
+
   .action-icons {
     display: flex;
     margin-left: 20rpx;
-    
+
     .nut-icon {
       margin-left: 20rpx;
       color: #fff;
       transition: transform 0.3s ease;
-      
+
       &:active {
         transform: scale(0.9);
       }
@@ -680,22 +680,22 @@ onUnmounted(() => {
   border-radius: 20rpx;
   box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.05);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-  
+
   &:active {
     transform: translateY(-2rpx);
     box-shadow: 0 8rpx 16rpx rgba(0, 0, 0, 0.08);
   }
-  
+
   .section-header {
     margin-bottom: 20rpx;
     font-size: 32rpx;
-    
+
     .highlight {
       color: #ff2c54;
       font-weight: bold;
       margin: 0 10rpx;
       position: relative;
-      
+
       &::after {
         content: '';
         position: absolute;
@@ -715,7 +715,7 @@ onUnmounted(() => {
   display: flex;
   flex-wrap: wrap;
   gap: 15rpx;
-  
+
   .tag-item {
     padding: 8rpx 16rpx;
     background-color: #f5f5f5;
@@ -725,7 +725,7 @@ onUnmounted(() => {
     transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     position: relative;
     overflow: hidden;
-    
+
     &::before {
       content: '';
       position: absolute;
@@ -738,20 +738,20 @@ onUnmounted(() => {
       transition: opacity 0.3s ease;
       z-index: -1;
     }
-    
+
     &:active {
       transform: scale(0.95);
     }
-    
+
     &.active {
       color: #d41414;
       box-shadow: 0 4rpx 8rpx rgba(255, 44, 84, 0.3);
-      
+
       &::before {
         opacity: 1;
       }
     }
-    
+
     &:hover:not(.active) {
       transform: translateY(-2rpx);
       box-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.1);
@@ -764,14 +764,14 @@ onUnmounted(() => {
   width: 100%;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
-  
+
   /* 隐藏滚动条 */
   &::-webkit-scrollbar {
     display: none;
   }
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* IE and Edge */
-  
+
   .song-list-container {
     display: flex;
     flex-direction: row;
@@ -780,7 +780,7 @@ onUnmounted(() => {
     width: max-content;
     animation: slideIn 0.5s ease-out;
   }
-  
+
   .song-item {
     display: flex;
     flex-direction: column;
@@ -792,24 +792,24 @@ onUnmounted(() => {
     animation: scaleIn 0.5s ease-out forwards;
     animation-delay: calc(var(--index, 0) * 0.05s);
     opacity: 0;
-    
+
     &:active {
       transform: scale(0.95);
     }
-    
+
     &:hover {
       transform: translateY(-5rpx);
       box-shadow: 0 8rpx 16rpx rgba(0, 0, 0, 0.1);
-      
+
       .song-cover {
         transform: scale(1.05);
       }
-      
+
       .song-title {
         color: #ff2c54;
       }
     }
-    
+
     .song-cover-container, .song-cover {
       width: 200rpx;
       height: 200rpx;
@@ -819,13 +819,13 @@ onUnmounted(() => {
       transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
       overflow: hidden;
     }
-    
+
     .song-info {
       margin-top: 10rpx;
       width: 100%;
       animation: fadeIn 0.3s ease-out forwards;
       animation-delay: calc(var(--index, 0) * 0.05s + 0.2s);
-      
+
       .song-title {
         font-size: 26rpx;
         font-weight: 500;
@@ -836,7 +836,7 @@ onUnmounted(() => {
         text-overflow: ellipsis;
         transition: color 0.3s ease;
       }
-      
+
       .song-artist {
         font-size: 22rpx;
         color: #999;
@@ -847,7 +847,7 @@ onUnmounted(() => {
         transition: color 0.3s ease;
       }
     }
-    
+
     .play-icon {
       position: absolute;
       right: 10rpx;
@@ -865,7 +865,7 @@ onUnmounted(() => {
       text-shadow: 0 0 10rpx rgba(0, 0, 0, 0.5);
       z-index: 2;
     }
-    
+
     &:hover .play-icon {
       opacity: 1;
       transform: scale(1.2);
@@ -878,14 +878,14 @@ onUnmounted(() => {
   width: 100%;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
-  
+
   /* 隐藏滚动条 */
   &::-webkit-scrollbar {
     display: none;
   }
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* IE and Edge */
-  
+
   .playlist-container {
     display: flex;
     flex-direction: row;
@@ -894,7 +894,7 @@ onUnmounted(() => {
     width: max-content;
     animation: slideIn 0.5s ease-out;
   }
-  
+
   .playlist-item {
     display: inline-block;
     width: 220rpx;
@@ -903,24 +903,24 @@ onUnmounted(() => {
     animation: scaleIn 0.5s ease-out forwards;
     animation-delay: calc(var(--index, 0) * 0.05s);
     opacity: 0;
-    
+
     &:active {
       transform: scale(0.95);
     }
-    
+
     &:hover {
       transform: translateY(-5rpx);
       box-shadow: 0 8rpx 16rpx rgba(0, 0, 0, 0.1);
-      
+
       .playlist-cover {
         transform: scale(1.05);
       }
-      
+
       .playlist-title {
         color: #ff2c54;
       }
     }
-    
+
     .playlist-cover-container {
       position: relative;
       width: 220rpx;
@@ -928,7 +928,7 @@ onUnmounted(() => {
       border-radius: 10rpx;
       overflow: hidden;
       box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.1);
-      
+
       .playlist-cover {
         width: 100%;
         height: 100%;
@@ -936,7 +936,7 @@ onUnmounted(() => {
         transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
       }
     }
-    
+
     .playlist-title {
       font-size: 26rpx;
       margin-top: 10rpx;
@@ -948,7 +948,7 @@ onUnmounted(() => {
       animation: fadeIn 0.3s ease-out forwards;
       animation-delay: calc(var(--index, 0) * 0.05s + 0.2s);
     }
-    
+
     .recommend-reason {
       font-size: 22rpx;
       color: #999;
@@ -1025,7 +1025,7 @@ onUnmounted(() => {
   padding: 6rpx 16rpx;
   border-radius: 20rpx;
   transition: all 0.3s ease;
-  
+
   &:active {
     transform: scale(0.95);
     background-color: rgba(255, 44, 84, 0.2);
@@ -1037,7 +1037,7 @@ onUnmounted(() => {
   grid-template-columns: repeat(2, 1fr);
   gap: 20rpx;
   margin-top: 20rpx;
-  
+
   .grid-item {
     position: relative;
     border-radius: 16rpx;
@@ -1048,16 +1048,16 @@ onUnmounted(() => {
     animation: scaleIn 0.5s ease-out forwards;
     animation-delay: calc(var(--index, 0) * 0.05s);
     opacity: 0;
-    
+
     &:active {
       transform: scale(0.95);
     }
-    
+
     &:hover {
       transform: translateY(-5rpx);
       box-shadow: 0 8rpx 16rpx rgba(0, 0, 0, 0.1);
     }
-    
+
     .grid-item-bg {
       position: absolute;
       width: 100%;
@@ -1067,12 +1067,12 @@ onUnmounted(() => {
       filter: brightness(0.7);
       transition: transform 0.3s ease, filter 0.3s ease;
     }
-    
+
     &:hover .grid-item-bg {
       transform: scale(1.05);
       filter: brightness(0.8);
     }
-    
+
     .grid-item-content {
       position: relative;
       z-index: 2;
@@ -1083,7 +1083,7 @@ onUnmounted(() => {
       padding: 16rpx;
       color: #fff;
     }
-    
+
     .play-icon-grid {
       position: absolute;
       right: 16rpx;
@@ -1093,30 +1093,30 @@ onUnmounted(() => {
       transition: all 0.3s ease;
       text-shadow: 0 0 10rpx rgba(0, 0, 0, 0.5);
     }
-    
+
     &:hover .play-icon-grid {
       opacity: 1;
       transform: scale(1.2);
     }
-    
+
     .grid-item-info {
       display: flex;
       flex-direction: column;
     }
-    
+
     .grid-item-title {
       font-size: 28rpx;
       font-weight: bold;
       margin-bottom: 6rpx;
       text-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.5);
     }
-    
+
     .grid-item-subtitle {
       font-size: 22rpx;
       opacity: 0.9;
       text-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.5);
     }
-    
+
     .free-tag {
       position: absolute;
       top: 16rpx;
@@ -1136,7 +1136,7 @@ onUnmounted(() => {
   display: flex;
   flex-direction: column;
   gap: 20rpx;
-  
+
   .program-item {
     display: flex;
     background-color: #f9f9f9;
@@ -1147,17 +1147,17 @@ onUnmounted(() => {
     animation: fadeIn 0.5s ease-out forwards;
     animation-delay: calc(var(--index, 0) * 0.05s);
     opacity: 0;
-    
+
     &:active {
       transform: scale(0.98);
     }
-    
+
     &:hover {
       transform: translateY(-3rpx);
       box-shadow: 0 6rpx 12rpx rgba(0, 0, 0, 0.08);
       background-color: #fff;
     }
-    
+
     .program-cover-container {
       width: 120rpx;
       height: 120rpx;
@@ -1167,18 +1167,18 @@ onUnmounted(() => {
       flex-shrink: 0;
       box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
     }
-    
+
     .program-cover {
       width: 100%;
       height: 100%;
       object-fit: cover;
       transition: transform 0.3s ease;
     }
-    
+
     &:hover .program-cover {
       transform: scale(1.05);
     }
-    
+
     .program-info {
       flex: 1;
       display: flex;
@@ -1186,18 +1186,18 @@ onUnmounted(() => {
       justify-content: space-between;
       overflow: hidden;
     }
-    
+
     .program-title {
       font-size: 28rpx;
       font-weight: bold;
       margin-bottom: 8rpx;
       transition: color 0.3s ease;
     }
-    
+
     &:hover .program-title {
       color: #ff2c54;
     }
-    
+
     .program-description {
       font-size: 24rpx;
       color: #666;
@@ -1208,7 +1208,7 @@ onUnmounted(() => {
       overflow: hidden;
       text-overflow: ellipsis;
     }
-    
+
     .program-stats {
       font-size: 22rpx;
       color: #999;
@@ -1222,7 +1222,7 @@ onUnmounted(() => {
   grid-template-columns: repeat(auto-fill, minmax(300rpx, 1fr));
   gap: 20rpx;
   padding: 10rpx 0;
-  
+
   .daily-playlist-item {
     position: relative;
     border-radius: 12rpx;
@@ -1231,17 +1231,17 @@ onUnmounted(() => {
     transition: all 0.3s ease;
     animation: scaleIn 0.5s ease-out forwards;
     animation-delay: calc(var(--index, 0) * 0.05s);
-    
+
     &:active {
       transform: scale(0.98);
     }
-    
+
     .daily-playlist-cover {
       width: 100%;
       height: 200rpx;
       transition: transform 0.3s ease;
     }
-    
+
     .daily-playlist-info {
       position: absolute;
       bottom: 0;
@@ -1249,7 +1249,7 @@ onUnmounted(() => {
       right: 0;
       padding: 20rpx;
       background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
-      
+
       .daily-playlist-title {
         color: #fff;
         font-size: 28rpx;
@@ -1257,7 +1257,7 @@ onUnmounted(() => {
         margin-bottom: 8rpx;
         display: block;
       }
-      
+
       .daily-playlist-desc {
         color: rgba(255,255,255,0.8);
         font-size: 24rpx;
@@ -1275,35 +1275,35 @@ onUnmounted(() => {
     border-bottom: 1px solid #eee;
     animation: slideIn 0.5s ease-out forwards;
     animation-delay: calc(var(--index, 0) * 0.05s);
-    
+
     &:last-child {
       border-bottom: none;
     }
-    
+
     .radio-cover {
       width: 120rpx;
       height: 120rpx;
       border-radius: 12rpx;
       margin-right: 20rpx;
     }
-    
+
     .radio-info {
       flex: 1;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      
+
       .radio-title {
         font-size: 28rpx;
         font-weight: bold;
         color: #333;
       }
-      
+
       .radio-host {
         font-size: 24rpx;
         color: #666;
       }
-      
+
       .radio-listeners {
         font-size: 22rpx;
         color: #999;

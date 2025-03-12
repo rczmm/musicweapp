@@ -14,7 +14,7 @@
     <!-- 专辑信息区域 -->
     <view class="album-info-section">
       <view class="album-header">
-        <image class="album-cover" :src="albumInfo.cover" mode="aspectFill" />
+        <image class="album-cover" :src="albumInfo.cover" mode="aspectFill"/>
         <view class="album-details">
           <text class="album-title">{{ albumInfo.title }}</text>
           <text class="album-artist">{{ albumInfo.artist }}</text>
@@ -54,9 +54,9 @@
         <text class="song-count">共{{ albumSongs.length }}首</text>
       </view>
 
-      <view 
-        v-for="(song, index) in albumSongs" 
-        :key="song.id" 
+      <view
+        v-for="(song, index) in albumSongs"
+        :key="song.id"
         class="song-item"
         @tap="playSong(song)"
       >
@@ -82,13 +82,13 @@
       </view>
 
       <scroll-view class="related-albums" scroll-x>
-        <view 
-          v-for="(album, index) in relatedAlbums" 
-          :key="album.id" 
+        <view
+          v-for="(album, index) in relatedAlbums"
+          :key="index"
           class="related-album-item"
           @tap="openAlbum(album)"
         >
-          <image :src="album.cover" class="related-album-cover" mode="aspectFill" />
+          <image :src="album.cover" class="related-album-cover"/>
           <text class="related-album-title">{{ album.title }}</text>
           <text class="related-album-artist">{{ album.artist }}</text>
         </view>
@@ -96,9 +96,9 @@
     </view>
 
     <!-- 迷你播放器组件 -->
-    <mini-player 
-      :song="currentPlayingSong" 
-      :playing="isPlaying" 
+    <mini-player
+      :song="currentPlayingSong"
+      :playing="isPlaying"
       :progress="playProgress"
       @play="handlePlay"
       @pause="handlePause"
@@ -108,7 +108,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import {ref, onMounted} from 'vue'
 import Taro from '@tarojs/taro'
 import MiniPlayer from '../../components/MiniPlayer/index.vue'
 
@@ -257,10 +257,10 @@ const playSong = (song) => {
     cover: albumInfo.value.cover,
     duration: song.duration || 240
   }
-  
+
   isPlaying.value = true
   playProgress.value = 0
-  
+
   console.log('播放歌曲:', song.title)
 }
 
@@ -314,7 +314,7 @@ onMounted(() => {
   // 获取路由参数
   const params = Taro.getCurrentInstance().router.params
   const albumId = params.id
-  
+
   // 这里可以根据albumId加载实际数据
   console.log('加载专辑ID:', albumId)
 })
@@ -339,19 +339,19 @@ onMounted(() => {
   position: sticky;
   top: 0;
   z-index: 100;
-  
+
   .back-button, .more-button {
     width: 60rpx;
     height: 60rpx;
     display: flex;
     align-items: center;
     justify-content: center;
-    
+
     .back-icon, .more-icon {
       font-size: 40rpx;
     }
   }
-  
+
   .title {
     font-size: 32rpx;
     font-weight: bold;
@@ -362,11 +362,11 @@ onMounted(() => {
 .album-info-section {
   padding: 30rpx;
   background: linear-gradient(to bottom, #ff6b81, #f8f9fa);
-  
+
   .album-header {
     display: flex;
     margin-bottom: 30rpx;
-    
+
     .album-cover {
       width: 240rpx;
       height: 240rpx;
@@ -374,26 +374,26 @@ onMounted(() => {
       box-shadow: 0 8rpx 20rpx rgba(0, 0, 0, 0.2);
       margin-right: 30rpx;
     }
-    
+
     .album-details {
       flex: 1;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      
+
       .album-title {
         font-size: 36rpx;
         font-weight: bold;
         color: #fff;
         margin-bottom: 10rpx;
       }
-      
+
       .album-artist {
         font-size: 28rpx;
         color: rgba(255, 255, 255, 0.9);
         margin-bottom: 20rpx;
       }
-      
+
       .album-desc {
         font-size: 24rpx;
         color: rgba(255, 255, 255, 0.8);
@@ -404,52 +404,52 @@ onMounted(() => {
         -webkit-box-orient: vertical;
         overflow: hidden;
       }
-      
+
       .album-stats {
         font-size: 22rpx;
         color: rgba(255, 255, 255, 0.7);
-        
+
         .album-release {
           margin-right: 20rpx;
         }
       }
     }
   }
-  
+
   .action-buttons {
     display: flex;
     justify-content: space-between;
-    
+
     .action-button {
       flex: 1;
       display: flex;
       flex-direction: column;
-      align-items:
-        center;
-        padding: 15rpx 0;
-        color: #fff;
-        font-size: 24rpx;
-        transition: all 0.3s ease;
-        
-        &:active {
-          transform: scale(0.95);
-        }        
-        
-        &.play {
-          background-color: #ff2c54;
-          border-radius: 30rpx;
-        }
-        
-        &.collect, &.comment, &.share {
-          background-color: rgba(255, 255, 255, 0.2);
-          border-radius: 30rpx;
-        }
-        
-        .play-icon, .collect-icon, .comment-icon, .share-icon {
-          font-size: 32rpx;
-          margin-bottom: 8rpx;
-        }
+      align-items: center;
+      padding: 15rpx 0;
+      color: #fff;
+      font-size: 24rpx;
+      transition: all 0.3s ease;
+
+      &:active {
+        transform: scale(0.95);
       }
+
+      &.play {
+        background-color: #ff2c54;
+        border-radius: 30rpx;
+      }
+
+      &.collect, &.comment, &.share {
+        background-color: rgba(255, 255, 255, 0.2);
+        border-radius: 30rpx;
+      }
+
+      .play-icon, .collect-icon, .comment-icon, .share-icon {
+        font-size: 32rpx;
+        margin-bottom: 8rpx;
+      }
+    }
+
     // 移除了这里多余的右花括号
   }
 }
@@ -460,57 +460,57 @@ onMounted(() => {
   background-color: #fff;
   border-radius: 30rpx 30rpx 0 0;
   margin-top: -30rpx;
-  
+
   .section-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20rpx;
-    
+
     .section-title {
       font-size: 32rpx;
       font-weight: bold;
       color: #333;
     }
-    
+
     .song-count {
       font-size: 24rpx;
       color: #999;
     }
   }
-  
+
   .song-item {
     display: flex;
     align-items: center;
     padding: 20rpx 0;
     border-bottom: 1px solid #f0f0f0;
-    
+
     &:last-child {
       border-bottom: none;
     }
-    
+
     .song-index {
       width: 60rpx;
       font-size: 28rpx;
       color: #999;
       text-align: center;
     }
-    
+
     .song-info {
       flex: 1;
       margin: 0 20rpx;
-      
+
       .song-title {
         font-size: 28rpx;
         color: #333;
         margin-bottom: 8rpx;
         display: block;
       }
-      
+
       .song-meta {
         display: flex;
         align-items: center;
-        
+
         .hq-tag {
           font-size: 20rpx;
           color: #ff2c54;
@@ -519,14 +519,14 @@ onMounted(() => {
           padding: 0 6rpx;
           margin-right: 10rpx;
         }
-        
+
         .song-artist {
           font-size: 24rpx;
           color: #999;
         }
       }
     }
-    
+
     .song-actions {
       .more-icon {
         font-size: 36rpx;
@@ -540,41 +540,42 @@ onMounted(() => {
 .related-section {
   padding: 30rpx;
   background-color: #fff;
-  
+
   .section-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20rpx;
-    
+
     .section-title {
       font-size: 32rpx;
       font-weight: bold;
       color: #333;
     }
-    
+
     .more-text {
       font-size: 24rpx;
       color: #999;
     }
   }
-  
+
   .related-albums {
     white-space: nowrap;
     margin: 0 -10rpx;
-    
+
     .related-album-item {
       display: inline-block;
       width: 200rpx;
       margin: 0 10rpx;
-      
+
       .related-album-cover {
         width: 200rpx;
         height: 200rpx;
         border-radius: 10rpx;
         margin-bottom: 10rpx;
+        object-fit: fill;
       }
-      
+
       .related-album-title {
         font-size: 26rpx;
         color: #333;
@@ -583,7 +584,7 @@ onMounted(() => {
         overflow: hidden;
         text-overflow: ellipsis;
       }
-      
+
       .related-album-artist {
         font-size: 22rpx;
         color: #999;

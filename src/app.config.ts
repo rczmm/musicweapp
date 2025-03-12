@@ -7,7 +7,7 @@ export default {
     'pages/comments/index',
     'pages/profile/index',
     'pages/playlist/index',
-    'pages/album/index',
+    'pages/album/albumIndex',
     'pages/search/index'
   ],
   window: {
