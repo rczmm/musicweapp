@@ -38,7 +38,7 @@
 </template>
 
 <script setup lang="ts">
-import {ref, computed, onMounted, watch} from 'vue'
+import {ref, computed, onMounted, onUnmounted, watch} from 'vue'
 import Taro from '@tarojs/taro'
 import { audioService } from '../../services/audioService'
 
@@ -54,52 +54,46 @@ const props = defineProps({
       cover: 'https://picsum.photos/100/100?random=1',
       duration: 240, // 歌曲时长（秒）
     })
-  },
-  // 是否正在播放
-  playing: {
-    type: Boolean,
-    default: false
-  },
-  // 当前播放进度（0-1之间的小数）
-  progress: {
-    type: Number,
-    default: 0
   }
 })
 
 // 定义事件
-const emit = defineEmits(['play', 'pause', 'showPlaylist'])
+const emit = defineEmits(['showPlaylist'])
 
 // 响应式状态
-const isPlaying = ref(props.playing)
-const currentProgress = ref(props.progress)
+const isPlaying = ref(audioService.isPlaying)
+const currentProgress = ref(audioService.progress)
 const isTextOverflow = ref(false)
 
 // 计算当前歌曲信息
-const currentSong = computed(() => props.song)
+const currentSong = computed(() => {
+  // 如果audioService有当前歌曲，优先使用它
+  if (audioService.currentSong) {
+    return audioService.currentSong
+  }
+  // 否则使用props传入的歌曲
+  return props.song
+})
 
 // 计算进度条角度（用于圆形进度条）
 const progressDegrees = computed(() => {
   return currentProgress.value * 360
 })
 
-// 监听props变化
-watch(() => props.playing, (newVal) => {
-  isPlaying.value = newVal
-})
-
-watch(() => props.progress, (newVal) => {
-  currentProgress.value = newVal
+// 监听歌曲变化
+watch(() => props.song, (newSong) => {
+  if (newSong && (!audioService.currentSong || newSong.id !== audioService.currentSong.id)) {
+    // 如果是新歌曲，加载并播放
+    audioService.playSong(newSong)
+  }
 })
 
 // 切换播放/暂停状态
 const togglePlay = () => {
   if (!isPlaying.value) {
     audioService.play()
-    emit('play')
   } else {
     audioService.pause()
-    emit('pause')
   }
   // 状态会通过audioService的事件回调更新
 }
@@ -138,6 +132,11 @@ onMounted(() => {
   // 同步当前状态
   isPlaying.value = audioService.isPlaying
   currentProgress.value = audioService.progress
+  
+  // 如果有歌曲信息但audioService没有当前歌曲，加载歌曲
+  if (props.song && !audioService.currentSong) {
+    audioService.playSong(props.song)
+  }
 })
 
 // 组件卸载时移除事件监听

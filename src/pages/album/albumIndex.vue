@@ -98,10 +98,6 @@
     <!-- 迷你播放器组件 -->
     <mini-player
       :song="currentPlayingSong"
-      :playing="isPlaying"
-      :progress="playProgress"
-      @play="handlePlay"
-      @pause="handlePause"
       @showPlaylist="handleShowPlaylist"
     />
   </view>

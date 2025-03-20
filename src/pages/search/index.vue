@@ -36,10 +36,10 @@
                 </view>
               </view>
               <view class="music-oper">
-                <nut-button type="primary" size="small" style="margin-right: 10px">
+                <nut-button type="primary" size="small" style="margin-right: 10px" @tap="playSong(item)">
                   <text>播放</text>
                 </nut-button>
-                <nut-button type="primary" size="small">
+                <nut-button type="primary" size="small" @tap="addToPlaylist(item)">
                   <text>添加到列表</text>
                 </nut-button>
               </view>
@@ -88,10 +88,10 @@
                 </view>
               </view>
               <view class="music-oper">
-                <nut-button type="primary" size="small" style="margin-right: 10px">
+                <nut-button type="primary" size="small" style="margin-right: 10px" @tap="playSong(item)">
                   <text>播放</text>
                 </nut-button>
-                <nut-button type="primary" size="small">
+                <nut-button type="primary" size="small" @tap="addToPlaylist(item)">
                   <text>添加到列表</text>
                 </nut-button>
               </view>
@@ -123,10 +123,6 @@
     <!-- 迷你播放器组件 -->
     <mini-player
       :song="currentPlayingSong"
-      :playing="isPlaying"
-      :progress="playProgress"
-      @play="handlePlay"
-      @pause="handlePause"
       @showPlaylist="handleShowPlaylist"
     />
   </view>
@@ -134,9 +130,10 @@
 
 <script setup lang="ts">
 import {Search as NutIconSearch} from '@nutui/icons-vue-taro';
-import {onMounted, ref} from "vue";
+import {onMounted, ref, onUnmounted} from "vue";
 import Taro from "@tarojs/taro";
 import MiniPlayer from "../../components/MiniPlayer/index.vue";
+import { audioService } from "../../services/audioService";
 
 const searchKeyword = ref<string>('');
 const currentIndex = ref<number>(0);
@@ -190,18 +187,56 @@ const orderList = ref<any[]>([
   },
 ])
 
+const playSong = (song) => {
+  // 更新当前播放歌曲信息
+  currentPlayingSong.value = {
+    id: song.id || Math.random().toString(36).substring(2, 15),
+    title: song.title,
+    artist: song.artist,
+    cover: song.cover || 'https://picsum.photos/100/100?random=1',
+    duration: song.duration || 240,
+    audioUrl: song.audioUrl || song.url || 'https://example.com/song1.mp3' // 使用默认URL作为示例
+  }
+
+  // 使用audioService播放歌曲
+  audioService.playSong(currentPlayingSong.value)
+  isPlaying.value = true
+  playProgress.value = 0
+  
+  console.log('播放歌曲:', song.title)
+  Taro.showToast({
+    title: `正在播放: ${song.title}`,
+    icon: 'success',
+    duration: 2000
+  })
+}
+
+const addToPlaylist = (song) => {
+  console.log('添加到播放列表:', song.title)
+  Taro.showToast({
+    title: `已添加到播放列表: ${song.title}`,
+    icon: 'success',
+    duration: 2000
+  })
+}
+
 const handlePlay = () => {
+  audioService.play()
   isPlaying.value = true
   console.log('开始播放:', currentPlayingSong.value.title)
 }
 
 const handlePause = () => {
+  audioService.pause()
   isPlaying.value = false
   console.log('暂停播放:', currentPlayingSong.value.title)
 }
 
 const handleShowPlaylist = () => {
   console.log('显示播放列表')
+  Taro.navigateTo({
+    url: '/pages/playlist/index?id=current&title=当前播放列表'
+  })
 }
 
 const handleSearch = () => {
@@ -231,7 +266,33 @@ onMounted(() => {
   const currentInstance = Taro.getCurrentInstance();
   if (currentInstance.router && currentInstance.router.params && currentInstance.router.params.keyword) {
     searchKeyword.value = currentInstance.router.params.keyword;
+    handleSearch();
   }
+  
+  // 初始化audioService事件监听
+  audioService.onPlay(() => {
+    isPlaying.value = true;
+  });
+  
+  audioService.onPause(() => {
+    isPlaying.value = false;
+  });
+  
+  audioService.onTimeUpdate((currentTime, duration, progress) => {
+    playProgress.value = progress;
+  });
+  
+  // 同步当前状态
+  if (audioService.currentSong) {
+    currentPlayingSong.value = audioService.currentSong;
+    isPlaying.value = audioService.isPlaying;
+    playProgress.value = audioService.progress;
+  }
+});
+
+onUnmounted(() => {
+  // 组件卸载时不需要移除所有监听器，因为其他页面可能也在使用
+  // 如果需要，可以添加移除特定监听器的方法
 })
 
 </script>
