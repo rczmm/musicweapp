@@ -81,7 +81,7 @@
         <text class="more-text">更多 ></text>
       </view>
 
-      <scroll-view class="related-albums" scroll-x>
+      <view class="related-albums">
         <view
           v-for="(album, index) in relatedAlbums"
           :key="index"
@@ -92,7 +92,7 @@
           <text class="related-album-title">{{ album.title }}</text>
           <text class="related-album-artist">{{ album.artist }}</text>
         </view>
-      </scroll-view>
+      </view>
     </view>
 
     <!-- 迷你播放器组件 -->
@@ -540,6 +540,7 @@ onMounted(() => {
 .related-section {
   padding: 30rpx;
   background-color: #fff;
+  margin-bottom: 100px;
 
   .section-header {
     display: flex;
@@ -561,7 +562,13 @@ onMounted(() => {
 
   .related-albums {
     white-space: nowrap;
-    margin: 0 -10rpx;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+
+    /* 隐藏滚动条 */
+    &::-webkit-scrollbar {
+      display: none;
+    }
 
     .related-album-item {
       display: inline-block;
