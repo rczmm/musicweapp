@@ -6,7 +6,7 @@
       <view class="notification">99+</view>
       <view class="search-input">
         <nut-icon-search></nut-icon-search>
-        <input type="text" placeholder="搜索"/>
+        <input type="text" v-model="searchKeyword" placeholder="搜索歌曲、歌手、专辑" @confirm="handleSearch"/>
       </view>
       <view class="action-icons">
         <nut-icon-heart></nut-icon-heart>
@@ -182,26 +182,34 @@
       @pause="handlePause"
       @showPlaylist="handleShowPlaylist"
     />
-
-    <nut-toast v-model:visible="show" :msg="msg"/>
   </view>
 </template>
 
 <script setup lang="ts">
-import {ref, computed, onMounted} from 'vue'
+import {ref, computed, onMounted} from 'vue';
 import {
   Search as NutIconSearch,
   Heart as NutIconHeart,
   Plus as NutIconPlus,
   Voice as NutIconVoice
-} from '@nutui/icons-vue-taro'
+} from '@nutui/icons-vue-taro';
 // 导入迷你播放器组件
-import MiniPlayer from '../../components/MiniPlayer/index.vue'
-import Taro from '@tarojs/taro'
+import MiniPlayer from '../../components/MiniPlayer/index.vue';
+import Taro from '@tarojs/taro';
 
-const show = ref(false)
-const isLoading = ref(true)
-const msg = ref('我成功了')
+const show = ref(false);
+const isLoading = ref(true);
+const msg = ref('我成功了');
+const searchKeyword = ref('');
+
+const handleSearch = () => {
+  console.log('搜索关键词：', searchKeyword.value);
+  if (searchKeyword.value) {
+    Taro.navigateTo({
+      url: '/pages/search/index' + `?keyword=${searchKeyword.value}`
+    })
+  }
+};
 
 // 热门标签
 const hotTags = ref([
@@ -210,44 +218,44 @@ const hotTags = ref([
   {id: 'western', name: '欧美'},
   {id: 'hotlist', name: '热门榜单'},
   {id: 'free', name: '免费听'}
-])
+]);
 
 // 当前选中的标签
-const currentHotTag = ref('chinese')
+const currentHotTag = ref('chinese');
 
 // 切换标签
-const switchHotTag = (tagId) => {
+const switchHotTag = (tagId: string) => {
   // 添加过渡动画效果
   isLoading.value = true
   setTimeout(() => {
     currentHotTag.value = tagId
     isLoading.value = false
   }, 300)
-}
+};
 
-const handleSongTap = (song) => {
+const handleSongTap = (song: any) => {
   currentPlayingSong.value = {
-    id: song.id || Math.random().toString(36).substr(2, 9),
+    id: song.id || Math.random().toString(36).substring(2, 15),
     title: song.title,
     artist: song.artist,
     cover: song.cover,
     duration: song.duration || 240,
+    audioUrl: song.audioUrl || song.url
   }
 
   if (!audioContext.value) {
     audioContext.value = Taro.createInnerAudioContext()
-    // Add event listeners here (see step 5 and 6)
+
     audioContext.value.onEnded(() => {
       console.log('播放结束')
       isPlaying.value = false // Update UI
       stopProgressUpdate()
-      // Potentially play the next song in a playlist
     })
     audioContext.value.onError((res) => {
       console.error('播放错误', res)
       isPlaying.value = false // Update UI
       stopProgressUpdate()
-      Taro.showToast({title: '播放出错', icon: 'error'})
+      Taro.showToast({title: '播放出错', icon: 'error', duration: 2000})
     })
     audioContext.value.onTimeUpdate(() => {
       if (audioContext.value && audioContext.value.duration) {
@@ -267,14 +275,10 @@ const handleSongTap = (song) => {
   show.value = true
   msg.value = `正在播放: ${song.title}`
   console.log('播放歌曲:', song.title, song.url) // Log the URL for debugging
-
-  Taro.navigateTo({
-    url: `/pages/player/index?id=${song.id || ''}&title=${encodeURIComponent(song.title)}&artist=${encodeURIComponent(song.artist)}&cover=${encodeURIComponent(song.cover)}`
-  })
-}
+};
 
 // 处理播放列表点击
-const handlePlaylistTap = (playlist) => {
+const handlePlaylistTap = (playlist: any) => {
   show.value = true
   console.log('打开播放列表:', playlist.title)
 
@@ -282,7 +286,7 @@ const handlePlaylistTap = (playlist) => {
   Taro.navigateTo({
     url: `/pages/playlist/index?id=${playlist.id || Math.random().toString(36).substr(2, 9)}&title=${encodeURIComponent(playlist.title)}`
   })
-}
+};
 
 // 不同标签下的歌曲数据
 const hotSongsByTag = ref({
@@ -382,12 +386,12 @@ const hotSongsByTag = ref({
       artist: '免费歌手3'
     }
   ]
-})
+});
 
 // 根据当前选中的标签获取对应的歌曲列表
 const currentHotSongs = computed(() => {
   return hotSongsByTag.value[currentHotTag.value] || []
-})
+});
 
 // 推荐歌单数据
 const recommendedPlaylists = ref([
@@ -406,7 +410,7 @@ const recommendedPlaylists = ref([
     title: '怀旧经典',
     recommendReason: ''
   }
-])
+]);
 
 // 上午好个性化推荐数据
 const morningRecommendations = ref([
@@ -434,7 +438,7 @@ const morningRecommendations = ref([
     subtitle: '精品歌单推荐',
     freeTag: false
   }
-])
+]);
 
 // 为你推荐的热门节目数据
 const recommendedPrograms = ref([
@@ -456,10 +460,10 @@ const recommendedPrograms = ref([
     description: '当世界安静下来，让音乐陪伴你度过每个夜晚',
     stats: '超22%人播放'
   }
-])
+]);
 
 // 处理网格项点击
-const handleGridItemTap = (item) => {
+const handleGridItemTap = (item: any) => {
   show.value = true
   console.log('打开推荐内容:', item.title)
 
@@ -480,10 +484,10 @@ const handleGridItemTap = (item) => {
       url: `/pages/playlist/index?id=featured&title=${encodeURIComponent(item.title)}`
     })
   }
-}
+};
 
 // 处理节目点击
-const handleProgramTap = (program) => {
+const handleProgramTap = (program: any) => {
   show.value = true
   console.log('打开节目:', program.title)
 
@@ -491,7 +495,7 @@ const handleProgramTap = (program) => {
   Taro.navigateTo({
     url: `/pages/album/albumIndex?id=${program.id || Math.random().toString(36).substr(2, 9)}&title=${encodeURIComponent(program.title)}`
   })
-}
+};
 
 // 根据喜爱歌曲推荐数据
 const recommendedSongs = ref([
@@ -516,16 +520,38 @@ const recommendedSongs = ref([
     isHQ: true,
     isLiked: false
   }
-])
+]);
 
 // 页面加载时的动画效果
 onMounted(() => {
   // 模拟加载完成
   setTimeout(() => {
     isLoading.value = false
-  }, 500)
-})
+  }, 500);
 
+  audioContext.value = Taro.createInnerAudioContext();
+
+  audioContext.value.onEnded(() => {
+    console.log('播放结束');
+    isPlaying.value = false;
+    playProgress.value = 0;
+  });
+
+  audioContext.value.onError((res) => {
+    console.error('播放错误', res);
+    isPlaying.value = false;
+    playProgress.value = 0;
+    Taro.showToast({title: '播放出错', icon: 'error'});
+  });
+
+  audioContext.value.onTimeUpdate(() => {
+    if (audioContext.value && audioContext.value.duration) {
+      playProgress.value = audioContext.value.currentTime / audioContext.value.duration;
+    }
+  });
+
+
+});
 
 // 播放器相关状态
 const currentPlayingSong = ref({
@@ -534,22 +560,24 @@ const currentPlayingSong = ref({
   artist: '黄龄/薛之谦',
   cover: 'https://picsum.photos/100/100?random=1',
   duration: 240, // 歌曲时长（秒）
-})
-const isPlaying = ref(false)
-const playProgress = ref(0)
-const audioContext = ref<Taro.InnerAudioContext | null>(null)
-
+  audioUrl: 'https://picsum.photos/100/100?random=1'
+});
+const isPlaying = ref(false);
+const playProgress = ref(0);
+const audioContext = ref<Taro.InnerAudioContext | null>(null);
 
 // 播放器相关方法
 const handlePlay = () => {
   isPlaying.value = true
+  audioContext.value = Taro.createInnerAudioContext()
+  audioContext.value.src = currentPlayingSong.value.audioUrl
   if (audioContext.value) {
     console.log('开始播放:', currentPlayingSong.value.title)
     audioContext.value.play()
   }
   // 模拟播放进度更新
   startProgressUpdate()
-}
+};
 
 const handlePause = () => {
   isPlaying.value = false
@@ -557,7 +585,7 @@ const handlePause = () => {
     audioContext.value.pause()
     console.log('暂停播放:', currentPlayingSong.value.title)
   }
-}
+};
 
 const handleShowPlaylist = () => {
   show.value = true
@@ -567,10 +595,10 @@ const handleShowPlaylist = () => {
     url: '/pages/playlist/index?id=current&title=当前播放列表'
   })
   console.log('显示播放列表')
-}
+};
 
 // 模拟播放进度更新的定时器
-let progressTimer = null
+let progressTimer = null;
 
 const startProgressUpdate = () => {
   // 清除可能存在的旧定时器
@@ -586,14 +614,14 @@ const startProgressUpdate = () => {
       playProgress.value = 0
     }
   }, 100)
-}
+};
 
 const stopProgressUpdate = () => {
   if (progressTimer) {
     clearInterval(progressTimer)
     progressTimer = null
   }
-}
+};
 
 // 组件卸载时清理定时器
 onUnmounted(() => {
@@ -602,7 +630,7 @@ onUnmounted(() => {
     audioContext.value = null
   }
   stopProgressUpdate()
-})
+});
 </script>
 
 <style lang="scss">

@@ -8,10 +8,17 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     MiniPlayer: typeof import('./src/components/MiniPlayer/index.vue')['default']
+    NutButton: typeof import('@nutui/nutui-taro')['Button']
+    NutIcon: typeof import('@nutui/nutui-taro')['Icon']
     NutIconHeart: typeof import('@nutui/nutui-taro')['IconHeart']
     NutIconPlus: typeof import('@nutui/nutui-taro')['IconPlus']
     NutIconSearch: typeof import('@nutui/nutui-taro')['IconSearch']
+    NutIconStar: typeof import('@nutui/nutui-taro')['IconStar']
+    NutIconStarFill: typeof import('@nutui/nutui-taro')['IconStarFill']
     NutIconVoice: typeof import('@nutui/nutui-taro')['IconVoice']
+    NutInput: typeof import('@nutui/nutui-taro')['Input']
+    NutSearchbar: typeof import('@nutui/nutui-taro')['Searchbar']
+    NutTag: typeof import('@nutui/nutui-taro')['Tag']
     NutToast: typeof import('@nutui/nutui-taro')['Toast']
   }
 }
