@@ -134,6 +134,7 @@ import {onMounted, ref, onUnmounted} from "vue";
 import Taro from "@tarojs/taro";
 import MiniPlayer from "../../components/MiniPlayer/index.vue";
 import { audioService } from "../../services/audioService";
+import { musicService } from "../../services/musicService";
 
 const searchKeyword = ref<string>('');
 const currentIndex = ref<number>(0);
@@ -239,34 +240,44 @@ const handleShowPlaylist = () => {
   })
 }
 
-const handleSearch = () => {
-  Taro.request({
-    url: 'https://api.github.com/search/repositories',
-    data: {
-      q: searchKeyword.value,
-      sort: 'stars',
-      order: 'desc',
-      per_page: 10,
-      page: 1
-    },
-    method: 'GET',
-    header: {
-      'Content-Type': 'application/json'
-    },
-    success: (res) => {
-      console.log(res);
-    },
-    fail: (err) => {
-      console.error(err);
-    }
-  })
+const handleSearch = async () => {
+  try {
+    // 使用musicService搜索歌曲
+    const songs = await musicService.searchSongs(searchKeyword.value);
+    
+    // 更新歌曲列表
+    musicList.value = songs.map(song => ({
+      ...song,
+      tags: ['音乐'] // 添加默认标签
+    }));
+    
+    console.log('搜索结果:', songs);
+  } catch (error) {
+    console.error('搜索失败:', error);
+    Taro.showToast({
+      title: '搜索失败，请稍后再试',
+      icon: 'none',
+      duration: 2000
+    });
+  }
 };
 
-onMounted(() => {
+onMounted(async () => {
   const currentInstance = Taro.getCurrentInstance();
   if (currentInstance.router && currentInstance.router.params && currentInstance.router.params.keyword) {
     searchKeyword.value = currentInstance.router.params.keyword;
     handleSearch();
+  } else {
+    // 如果没有搜索关键词，加载默认歌曲列表
+    try {
+      const songs = await musicService.getSongs();
+      musicList.value = songs.map(song => ({
+        ...song,
+        tags: ['音乐'] // 添加默认标签
+      }));
+    } catch (error) {
+      console.error('获取歌曲列表失败:', error);
+    }
   }
   
   // 初始化audioService事件监听

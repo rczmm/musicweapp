@@ -192,6 +192,7 @@ import {
 // 导入迷你播放器组件
 import MiniPlayer from '../../components/MiniPlayer/index.vue';
 import Taro from '@tarojs/taro';
+import { musicService } from '../../services/musicService';
 
 const show = ref(false);
 const isLoading = ref(true);
@@ -286,103 +287,33 @@ const handlePlaylistTap = (playlist: any) => {
 
 // 不同标签下的歌曲数据
 const hotSongsByTag = ref({
-  chinese: [
-    {
-      url: 'https://example.com/song1.mp3',
-      cover: 'https://picsum.photos/100/100?random=1',
-      title: '起风了',
-      artist: '买辣椒也用券'
-    },
-    {
-      cover: 'https://picsum.photos/100/100?random=2',
-      title: 'Former',
-      artist: '隔壁老樊'
-    },
-    {
-      cover: 'https://picsum.photos/100/100?random=3',
-      title: '世间美好与你环环相扣',
-      artist: '柏松'
-    },
-    {
-      cover: 'https://picsum.photos/100/100?random=3',
-      title: '世间美好与你环环相扣',
-      artist: '柏松'
-    },
-    {
-      cover: 'https://picsum.photos/100/100?random=3',
-      title: '世间美好与你环环相扣',
-      artist: '柏松'
-    }
-  ],
-  cantonese: [
-    {
-      cover: 'https://picsum.photos/100/100?random=10',
-      title: '红日',
-      artist: '李克勤'
-    },
-    {
-      cover: 'https://picsum.photos/100/100?random=11',
-      title: '海阔天空',
-      artist: 'Beyond'
-    },
-    {
-      cover: 'https://picsum.photos/100/100?random=12',
-      title: '喜欢你',
-      artist: '陈奕迅'
-    }
-  ],
-  western: [
-    {
-      cover: 'https://picsum.photos/100/100?random=13',
-      title: 'Shape of You',
-      artist: 'Ed Sheeran'
-    },
-    {
-      cover: 'https://picsum.photos/100/100?random=14',
-      title: 'Blinding Lights',
-      artist: 'The Weeknd'
-    },
-    {
-      cover: 'https://picsum.photos/100/100?random=15',
-      title: 'Bad Guy',
-      artist: 'Billie Eilish'
-    }
-  ],
-  hotlist: [
-    {
-      cover: 'https://picsum.photos/100/100?random=16',
-      title: '热门歌曲1',
-      artist: '热门歌手1'
-    },
-    {
-      cover: 'https://picsum.photos/100/100?random=17',
-      title: '热门歌曲2',
-      artist: '热门歌手2'
-    },
-    {
-      cover: 'https://picsum.photos/100/100?random=18',
-      title: '热门歌曲3',
-      artist: '热门歌手3'
-    }
-  ],
-  free: [
-    {
-      cover: 'https://picsum.photos/100/100?random=19',
-      title: '免费歌曲1',
-      artist: '免费歌手1'
-    },
-    {
-      cover: 'https://picsum.photos/100/100?random=20',
-      title: '免费歌曲2',
-      artist: '免费歌手2'
-    },
-    {
-      cover: 'https://picsum.photos/100/100?random=21',
-      title: '免费歌曲3',
-      artist: '免费歌手3'
-    }
-  ]
+  chinese: [],
+  cantonese: [],
+  western: [],
+  hotlist: [],
+  free: []
 });
+
+// 加载歌曲数据
+const loadSongs = async () => {
+  try {
+    const songs = await musicService.getSongs();
+    
+    // 将获取的歌曲分配到不同的标签中
+    // 这里简单地将所有歌曲放入chinese标签，实际应用中可以根据歌曲属性分类
+    hotSongsByTag.value.chinese = songs;
+    
+    // 复制一些歌曲到其他标签，实际应用中应该根据API返回的数据进行分类
+    if (songs.length > 0) {
+      hotSongsByTag.value.cantonese = [...songs];
+      hotSongsByTag.value.western = [...songs];
+      hotSongsByTag.value.hotlist = [...songs];
+      hotSongsByTag.value.free = [...songs];
+    }
+  } catch (error) {
+    console.error('加载歌曲失败:', error);
+  }
+};
 
 // 根据当前选中的标签获取对应的歌曲列表
 const currentHotSongs = computed(() => {
@@ -519,11 +450,12 @@ const recommendedSongs = ref([
 ]);
 
 // 页面加载时的动画效果
-onMounted(() => {
-  // 模拟加载完成
-  setTimeout(() => {
-    isLoading.value = false
-  }, 500);
+onMounted(async () => {
+  // 加载歌曲数据
+  await loadSongs();
+  
+  // 加载完成后更新状态
+  isLoading.value = false;
 
   audioContext.value = Taro.createInnerAudioContext();
 

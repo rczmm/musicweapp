@@ -54,9 +54,9 @@
         <text class="song-count">共{{ playlistSongs.length }}首</text>
       </view>
 
-      <view 
-        v-for="(song, index) in playlistSongs" 
-        :key="song.id" 
+      <view
+        v-for="(song, index) in playlistSongs"
+        :key="song.id"
         class="song-item"
         @tap="playSong(song)"
       >
@@ -82,9 +82,9 @@
       </view>
 
       <scroll-view class="similar-playlists" scroll-x>
-        <view 
-          v-for="(playlist, index) in similarPlaylists" 
-          :key="playlist.id" 
+        <view
+          v-for="(playlist, index) in similarPlaylists"
+          :key="playlist.id"
           class="similar-playlist-item"
           @tap="openPlaylist(playlist)"
         >
@@ -96,8 +96,8 @@
     </view>
 
     <!-- 迷你播放器组件 -->
-    <mini-player 
-      :song="currentPlayingSong" 
+    <mini-player
+      :song="currentPlayingSong"
       @showPlaylist="handleShowPlaylist"
     />
   </view>
@@ -107,6 +107,7 @@
 import { ref, computed, onMounted } from 'vue'
 import Taro from '@tarojs/taro'
 import MiniPlayer from '../../components/MiniPlayer/index.vue'
+import { musicService } from '../../services/musicService'
 
 // 歌单信息
 const playlistInfo = ref({
@@ -122,64 +123,28 @@ const playlistInfo = ref({
 })
 
 // 歌单歌曲列表
-const playlistSongs = ref([
-  {
-    id: '201',
-    title: '起风了',
-    artist: '买辣椒也用券',
-    duration: '5:22',
-    isHQ: true
-  },
-  {
-    id: '202',
-    title: 'Former',
-    artist: '隔壁老樊',
-    duration: '4:45',
-    isHQ: true
-  },
-  {
-    id: '203',
-    title: '世间美好与你环环相扣',
-    artist: '柏松',
-    duration: '4:30',
-    isHQ: false
-  },
-  {
-    id: '204',
-    title: '阿拉斯加海湾',
-    artist: '蓝心羽',
-    duration: '3:18',
-    isHQ: true
-  },
-  {
-    id: '205',
-    title: '句号',
-    artist: '邓紫棋',
-    duration: '4:12',
-    isHQ: true
-  },
-  {
-    id: '206',
-    title: '光年之外',
-    artist: '邓紫棋',
-    duration: '3:55',
-    isHQ: true
-  },
-  {
-    id: '207',
-    title: '倒数',
-    artist: '邓紫棋',
-    duration: '3:49',
-    isHQ: false
-  },
-  {
-    id: '208',
-    title: '可惜没如果',
-    artist: '林俊杰',
-    duration: '4:28',
-    isHQ: true
+const playlistSongs = ref([]);
+
+// 加载歌曲数据
+const loadSongs = async () => {
+  try {
+    const songs = await musicService.getSongs();
+
+    // 将API返回的歌曲数据转换为播放列表所需的格式
+    playlistSongs.value = songs.map(song => ({
+      ...song,
+      duration: song.duration ? `${Math.floor(song.duration / 60)}:${(song.duration % 60).toString().padStart(2, '0')}` : '0:00',
+      isHQ: true // 默认设置为高品质
+    }));
+  } catch (error) {
+    console.error('加载歌曲列表失败:', error);
+    Taro.showToast({
+      title: '加载歌曲列表失败',
+      icon: 'none',
+      duration: 2000
+    });
   }
-])
+}
 
 // 相似歌单推荐
 const similarPlaylists = ref([
@@ -242,6 +207,11 @@ const showMoreOptions = () => {
 const playAll = () => {
   if (playlistSongs.value.length > 0) {
     playSong(playlistSongs.value[0])
+    Taro.showToast({
+      title: '开始播放全部歌曲',
+      icon: 'success',
+      duration: 2000
+    })
   }
 }
 
@@ -254,10 +224,10 @@ const playSong = (song) => {
     cover: playlistInfo.value.cover,
     duration: song.duration || 240
   }
-  
+
   isPlaying.value = true
   playProgress.value = 0
-  
+
   console.log('播放歌曲:', song.title)
 }
 
@@ -291,16 +261,6 @@ const openPlaylist = (playlist) => {
   })
 }
 
-// 播放器相关方法
-const handlePlay = () => {
-  isPlaying.value = true
-  console.log('开始播放:', currentPlayingSong.value.title)
-}
-
-const handlePause = () => {
-  isPlaying.value = false
-  console.log('暂停播放:', currentPlayingSong.value.title)
-}
 
 const handleShowPlaylist = () => {
   console.log('显示播放列表')
@@ -310,8 +270,9 @@ const handleShowPlaylist = () => {
 onMounted(() => {
   // 获取路由参数
   const params = Taro.getCurrentInstance().router.params
-  const playlistId = params.id
-  
+  const playlistId = params.id;
+  loadSongs()
+
   // 这里可以根据playlistId加载实际数据
   console.log('加载歌单ID:', playlistId)
 })
@@ -336,19 +297,19 @@ onMounted(() => {
   position: sticky;
   top: 0;
   z-index: 100;
-  
+
   .back-button, .more-button {
     width: 60rpx;
     height: 60rpx;
     display: flex;
     align-items: center;
     justify-content: center;
-    
+
     .back-icon, .more-icon {
       font-size: 40rpx;
     }
   }
-  
+
   .title {
     font-size: 32rpx;
     font-weight: bold;
@@ -359,11 +320,11 @@ onMounted(() => {
 .playlist-info-section {
   padding: 30rpx;
   background: linear-gradient(to bottom, #ff6b81, #f8f9fa);
-  
+
   .playlist-header {
     display: flex;
     margin-bottom: 30rpx;
-    
+
     .playlist-cover {
       width: 240rpx;
       height: 240rpx;
@@ -371,26 +332,26 @@ onMounted(() => {
       box-shadow: 0 8rpx 20rpx rgba(0, 0, 0, 0.2);
       margin-right: 30rpx;
     }
-    
+
     .playlist-details {
       flex: 1;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      
+
       .playlist-title {
         font-size: 36rpx;
         font-weight: bold;
         color: #fff;
         margin-bottom: 10rpx;
       }
-      
+
       .playlist-creator {
         font-size: 28rpx;
         color: rgba(255, 255, 255, 0.9);
         margin-bottom: 20rpx;
       }
-      
+
       .playlist-desc {
         font-size: 24rpx;
         color: rgba(255, 255, 255, 0.8);
@@ -401,22 +362,22 @@ onMounted(() => {
         -webkit-box-orient: vertical;
         overflow: hidden;
       }
-      
+
       .playlist-stats {
         font-size: 22rpx;
         color: rgba(255, 255, 255, 0.7);
-        
+
         .playlist-play-count {
           margin-right: 20rpx
         }
       }
     }
   }
-  
+
   .action-buttons {
     display: flex;
     justify-content: space-between;
-    
+
     .action-button {
       flex: 1;
       display: flex;
@@ -426,21 +387,21 @@ onMounted(() => {
       color: #fff;
       font-size: 24rpx;
       transition: all 0.3s ease;
-      
+
       &:active {
         transform: scale(0.95);
       }
-      
+
       &.play {
         background-color: #ff2c54;
         border-radius: 30rpx;
       }
-      
+
       &.collect, &.comment, &.share {
         background-color: rgba(255, 255, 255, 0.2);
         border-radius: 30rpx;
       }
-      
+
       .play-icon, .collect-icon, .comment-icon, .share-icon {
         font-size: 32rpx;
         margin-bottom: 8rpx;
@@ -455,57 +416,57 @@ onMounted(() => {
   background-color: #fff;
   border-radius: 30rpx 30rpx 0 0;
   margin-top: -30rpx;
-  
+
   .section-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20rpx;
-    
+
     .section-title {
       font-size: 32rpx;
       font-weight: bold;
       color: #333;
     }
-    
+
     .song-count {
       font-size: 24rpx;
       color: #999;
     }
   }
-  
+
   .song-item {
     display: flex;
     align-items: center;
     padding: 20rpx 0;
     border-bottom: 1px solid #f0f0f0;
-    
+
     &:last-child {
       border-bottom: none;
     }
-    
+
     .song-index {
       width: 60rpx;
       font-size: 28rpx;
       color: #999;
       text-align: center;
     }
-    
+
     .song-info {
       flex: 1;
       margin: 0 20rpx;
-      
+
       .song-title {
         font-size: 28rpx;
         color: #333;
         margin-bottom: 8rpx;
         display: block;
       }
-      
+
       .song-meta {
         display: flex;
         align-items: center;
-        
+
         .hq-tag {
           font-size: 20rpx;
           color: #ff2c54;
@@ -514,14 +475,14 @@ onMounted(() => {
           padding: 0 6rpx;
           margin-right: 10rpx;
         }
-        
+
         .song-artist {
           font-size: 24rpx;
           color: #999;
         }
       }
     }
-    
+
     .song-actions {
       .more-icon {
         font-size: 36rpx;
@@ -535,41 +496,41 @@ onMounted(() => {
 .similar-section {
   padding: 30rpx;
   background-color: #fff;
-  
+
   .section-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20rpx;
-    
+
     .section-title {
       font-size: 32rpx;
       font-weight: bold;
       color: #333;
     }
-    
+
     .more-text {
       font-size: 24rpx;
       color: #999;
     }
   }
-  
+
   .similar-playlists {
     white-space: nowrap;
     margin: 0 -10rpx;
-    
+
     .similar-playlist-item {
       display: inline-block;
       width: 200rpx;
       margin: 0 10rpx;
-      
+
       .similar-playlist-cover {
         width: 200rpx;
         height: 200rpx;
         border-radius: 10rpx;
         margin-bottom: 10rpx;
       }
-      
+
       .similar-playlist-title {
         font-size: 26rpx;
         color: #333;
@@ -578,7 +539,7 @@ onMounted(() => {
         overflow: hidden;
         text-overflow: ellipsis;
       }
-      
+
       .similar-playlist-creator {
         font-size: 22rpx;
         color: #999;
