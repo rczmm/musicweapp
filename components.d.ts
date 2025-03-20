@@ -8,6 +8,10 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     MiniPlayer: typeof import('./src/components/MiniPlayer/index.vue')['default']
+    NutIconHeart: typeof import('@nutui/nutui-taro')['IconHeart']
+    NutIconPlus: typeof import('@nutui/nutui-taro')['IconPlus']
+    NutIconSearch: typeof import('@nutui/nutui-taro')['IconSearch']
+    NutIconVoice: typeof import('@nutui/nutui-taro')['IconVoice']
     NutToast: typeof import('@nutui/nutui-taro')['Toast']
   }
 }

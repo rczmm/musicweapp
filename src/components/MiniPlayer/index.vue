@@ -1,10 +1,10 @@
 <template>
-  <view class="mini-player" >
+  <view class="mini-player">
     <!-- 专辑封面 -->
     <view class="album-cover" @tap="navigateToPlayer">
-      <image :src="currentSong.cover" class="cover-image" />
+      <image :src="currentSong.cover" class="cover-image"/>
     </view>
-    
+
     <!-- 歌曲信息 -->
     <view class="song-info" @tap="navigateToPlayer">
       <view class="marquee-container">
@@ -14,14 +14,14 @@
         </view>
       </view>
     </view>
-    
+
     <!-- 播放控制 -->
     <view class="playback-controls">
       <view class="play-button-container">
         <view class="progress-circle">
           <view class="progress-circle-bg"></view>
-          <view 
-            class="progress-circle-fill" 
+          <view
+            class="progress-circle-fill"
             :style="{ transform: `rotate(${progressDegrees}deg)` }"
           ></view>
         </view>
@@ -38,7 +38,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue'
+import {ref, computed, onMounted, watch} from 'vue'
 import Taro from '@tarojs/taro'
 
 // 定义组件的props
@@ -135,7 +135,7 @@ onMounted(() => {
   box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
   box-sizing: border-box;
   z-index: 999;
-  
+
   // 专辑封面
   .album-cover {
     width: 80px;
@@ -144,58 +144,58 @@ onMounted(() => {
     overflow: hidden;
     margin-right: 20px;
     flex-shrink: 0;
-    
+
     .cover-image {
       width: 100%;
       height: 100%;
       object-fit: cover;
     }
   }
-  
+
   // 歌曲信息
   .song-info {
     flex: 1;
     overflow: hidden;
-    
+
     .marquee-container {
       width: 100%;
       overflow: hidden;
       white-space: nowrap;
     }
-    
+
     .marquee-content {
       display: inline-block;
-      
+
       &.scrolling {
         animation: marquee 10s linear infinite;
       }
     }
-    
+
     .song-title {
       font-size: 28px;
       font-weight: bold;
       color: #333;
     }
-    
+
     .song-artist {
       font-size: 24px;
       color: #666;
     }
   }
-  
+
   // 播放控制
   .playback-controls {
     display: flex;
     align-items: center;
     margin-left: 20px;
-    
+
     .play-button-container {
       position: relative;
       width: 60px;
       height: 60px;
       margin-right: 20px;
     }
-    
+
     .progress-circle {
       position: absolute;
       top: 0;
@@ -203,7 +203,7 @@ onMounted(() => {
       width: 100%;
       height: 100%;
       border-radius: 50%;
-      
+
       .progress-circle-bg {
         position: absolute;
         top: 0;
@@ -214,7 +214,7 @@ onMounted(() => {
         border: 2px solid #eee;
         box-sizing: border-box;
       }
-      
+
       .progress-circle-fill {
         position: absolute;
         top: 0;
@@ -223,7 +223,7 @@ onMounted(() => {
         height: 100%;
         transform-origin: right center;
         background-color: transparent;
-        
+
         &::before {
           content: '';
           position: absolute;
@@ -238,7 +238,7 @@ onMounted(() => {
         }
       }
     }
-    
+
     .play-button {
       position: absolute;
       top: 50%;
@@ -251,26 +251,26 @@ onMounted(() => {
       display: flex;
       align-items: center;
       justify-content: center;
-      
+
       .play-icon {
         font-size: 24px;
         color: white;
         margin-left: 4px; /* 调整播放图标位置 */
       }
-      
+
       .pause-icon {
         font-size: 20px;
         color: white;
       }
     }
-    
+
     .playlist-button {
       width: 40px;
       height: 40px;
       display: flex;
       align-items: center;
       justify-content: center;
-      
+
       .playlist-icon {
         font-size: 30px;
         color: #666;

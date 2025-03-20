@@ -6,7 +6,7 @@
       <view class="notification">99+</view>
       <view class="search-input">
         <nut-icon-search></nut-icon-search>
-        <input type="text" placeholder="搜索" />
+        <input type="text" placeholder="搜索"/>
       </view>
       <view class="action-icons">
         <nut-icon-heart></nut-icon-heart>
@@ -183,12 +183,12 @@
       @showPlaylist="handleShowPlaylist"
     />
 
-    <nut-toast v-model:visible="show" :msg="msg" />
+    <nut-toast v-model:visible="show" :msg="msg"/>
   </view>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import {ref, computed, onMounted} from 'vue'
 import {
   Search as NutIconSearch,
   Heart as NutIconHeart,
@@ -205,11 +205,11 @@ const msg = ref('我成功了')
 
 // 热门标签
 const hotTags = ref([
-  { id: 'chinese', name: '中文' },
-  { id: 'cantonese', name: '粤语' },
-  { id: 'western', name: '欧美' },
-  { id: 'hotlist', name: '热门榜单' },
-  { id: 'free', name: '免费听' }
+  {id: 'chinese', name: '中文'},
+  {id: 'cantonese', name: '粤语'},
+  {id: 'western', name: '欧美'},
+  {id: 'hotlist', name: '热门榜单'},
+  {id: 'free', name: '免费听'}
 ])
 
 // 当前选中的标签
@@ -225,9 +225,7 @@ const switchHotTag = (tagId) => {
   }, 300)
 }
 
-// 处理歌曲点击 - 更新当前播放的歌曲并开始播放
 const handleSongTap = (song) => {
-  // 更新当前播放的歌曲
   currentPlayingSong.value = {
     id: song.id || Math.random().toString(36).substr(2, 9),
     title: song.title,
@@ -236,16 +234,40 @@ const handleSongTap = (song) => {
     duration: song.duration || 240,
   }
 
-  // 开始播放
+  if (!audioContext.value) {
+    audioContext.value = Taro.createInnerAudioContext()
+    // Add event listeners here (see step 5 and 6)
+    audioContext.value.onEnded(() => {
+      console.log('播放结束')
+      isPlaying.value = false // Update UI
+      stopProgressUpdate()
+      // Potentially play the next song in a playlist
+    })
+    audioContext.value.onError((res) => {
+      console.error('播放错误', res)
+      isPlaying.value = false // Update UI
+      stopProgressUpdate()
+      Taro.showToast({title: '播放出错', icon: 'error'})
+    })
+    audioContext.value.onTimeUpdate(() => {
+      if (audioContext.value && audioContext.value.duration) {
+        playProgress.value = audioContext.value.currentTime / audioContext.value.duration
+      }
+    })
+  }
+
+  audioContext.value.src = song.url // Assuming your song object has a 'url' property
   isPlaying.value = true
-  playProgress.value = 0 // 重置进度
-  startProgressUpdate()
+  playProgress.value = 0
+  // startProgressUpdate() // Remove this as progress will be updated by onTimeUpdate
+  if (isPlaying.value) {
+    audioContext.value.play()
+  }
 
   show.value = true
   msg.value = `正在播放: ${song.title}`
-  console.log('播放歌曲:', song.title)
+  console.log('播放歌曲:', song.title, song.url) // Log the URL for debugging
 
-  // 跳转到播放器页面
   Taro.navigateTo({
     url: `/pages/player/index?id=${song.id || ''}&title=${encodeURIComponent(song.title)}&artist=${encodeURIComponent(song.artist)}&cover=${encodeURIComponent(song.cover)}`
   })
@@ -514,24 +536,27 @@ const currentPlayingSong = ref({
 })
 const isPlaying = ref(false)
 const playProgress = ref(0)
+const audioContext = ref<Taro.InnerAudioContext | null>(null)
+
 
 // 播放器相关方法
 const handlePlay = () => {
   isPlaying.value = true
-  // 这里可以添加实际的播放逻辑
+  if (audioContext.value) {
+    audioContext.value.play()
+  }
   console.log('开始播放:', currentPlayingSong.value.title)
-
   // 模拟播放进度更新
   startProgressUpdate()
 }
 
 const handlePause = () => {
   isPlaying.value = false
-  // 这里可以添加实际的暂停逻辑
+  if (audioContext.value) {
+    audioContext.value.pause()
+    // stopProgressUpdate() // No need to manually stop progress
+  }
   console.log('暂停播放:', currentPlayingSong.value.title)
-
-  // 停止进度更新
-  stopProgressUpdate()
 }
 
 const handleShowPlaylist = () => {
@@ -572,6 +597,10 @@ const stopProgressUpdate = () => {
 
 // 组件卸载时清理定时器
 onUnmounted(() => {
+  if (audioContext.value) {
+    audioContext.value.destroy()
+    audioContext.value = null
+  }
   stopProgressUpdate()
 })
 </script>
@@ -769,6 +798,7 @@ onUnmounted(() => {
   &::-webkit-scrollbar {
     display: none;
   }
+
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* IE and Edge */
 
@@ -883,6 +913,7 @@ onUnmounted(() => {
   &::-webkit-scrollbar {
     display: none;
   }
+
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* IE and Edge */
 
@@ -1248,7 +1279,7 @@ onUnmounted(() => {
       left: 0;
       right: 0;
       padding: 20rpx;
-      background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+      background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
 
       .daily-playlist-title {
         color: #fff;
@@ -1259,7 +1290,7 @@ onUnmounted(() => {
       }
 
       .daily-playlist-desc {
-        color: rgba(255,255,255,0.8);
+        color: rgba(255, 255, 255, 0.8);
         font-size: 24rpx;
         display: block;
       }
