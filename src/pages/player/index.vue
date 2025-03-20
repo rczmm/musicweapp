@@ -88,9 +88,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import Taro from '@tarojs/taro'
-
+import { audioService, PlayMode } from '../../services/audioService'
 
 // 定义组件的props
 const props = defineProps({
@@ -125,11 +125,8 @@ const isPlaying = ref(props.playing)
 const progress = ref(props.progress)
 const currentTime = ref(Math.floor(props.progress * props.song.duration))
 const isLiked = ref(false)
-const playMode = ref('repeat') // 'repeat', 'repeat-one', 'shuffle'
+const playMode = ref(PlayMode.REPEAT)
 const isDragging = ref(false)
-
-// 音频控制
-const audioContext = Taro.createInnerAudioContext()
 
 // 计算当前歌曲信息
 const currentSong = computed(() => props.song)
@@ -137,11 +134,11 @@ const currentSong = computed(() => props.song)
 // 计算播放模式图标
 const playModeIcon = computed(() => {
     switch (playMode.value) {
-        case 'repeat':
+        case PlayMode.REPEAT:
             return '🔁'
-        case 'repeat-one':
+        case PlayMode.REPEAT_ONE:
             return '🔂'
-        case 'shuffle':
+        case PlayMode.SHUFFLE:
             return '🔀'
         default:
             return '🔁'
@@ -150,18 +147,31 @@ const playModeIcon = computed(() => {
 
 // 监听props变化
 watch(() => props.playing, (newVal) => {
-    isPlaying.value = newVal
-    if (isPlaying.value) {
-        audioContext.play()
-    } else {
-        audioContext.pause()
+    if (newVal !== isPlaying.value) {
+        if (newVal) {
+            audioService.play()
+        } else {
+            audioService.pause()
+        }
     }
 })
 
 watch(() => props.progress, (newVal) => {
-    if (!isDragging.value) {
+    if (!isDragging.value && Math.abs(newVal - progress.value) > 0.01) {
+        // 只有当进度差异较大时才更新，避免循环更新
         progress.value = newVal
         currentTime.value = Math.floor(newVal * props.song.duration)
+        audioService.seekByProgress(newVal)
+    }
+})
+
+// 监听歌曲变化
+watch(() => props.song, (newSong) => {
+    if (newSong && newSong.id !== audioService.currentSong?.id) {
+        audioService.playSong(newSong)
+        if (!props.playing) {
+            audioService.pause()
+        }
     }
 })
 
@@ -185,14 +195,14 @@ const refreshPlaylist = () => {
 
 // 切换播放/暂停状态
 const togglePlay = () => {
-    isPlaying.value = !isPlaying.value
-    if (isPlaying.value) {
-        audioContext.play()
+    if (!isPlaying.value) {
+        audioService.play()
         emit('play')
     } else {
-        audioContext.pause()
+        audioService.pause()
         emit('pause')
     }
+    // 状态会通过audioService的事件回调更新
 }
 
 // 切换喜欢状态
@@ -208,20 +218,19 @@ const showComments = () => {
 
 // 切换播放模式
 const togglePlayMode = () => {
-    const modes = ['repeat', 'repeat-one', 'shuffle']
-    const currentIndex = modes.indexOf(playMode.value)
-    const nextIndex = (currentIndex + 1) % modes.length
-    playMode.value = modes[nextIndex]
+    playMode.value = audioService.togglePlayMode()
 }
 
 // 上一首歌曲
 const prevSong = () => {
     emit('prev')
+    // 实际的歌曲切换逻辑应该由父组件处理，然后通过props传入新的歌曲
 }
 
 // 下一首歌曲
 const nextSong = () => {
     emit('next')
+    // 实际的歌曲切换逻辑应该由父组件处理，然后通过props传入新的歌曲
 }
 
 // 显示播放列表
@@ -262,32 +271,49 @@ const onSliderTouchEnd = () => {
     // 发送seek事件，通知父组件更新播放进度
     emit('seek', progress.value)
     
-    // 如果有音频上下文，直接调整播放进度
-    if (audioContext) {
-        const newTime = progress.value * props.song.duration
-        audioContext.seek(newTime)
-    }
+    // 使用audioService调整播放进度
+    audioService.seekByProgress(progress.value)
 }
 
 // 组件挂载时的逻辑
 onMounted(() => {
-    // 初始化音频
-    if (props.song.audioUrl) {
-        audioContext.src = props.song.audioUrl
+    // 确保audioService已初始化
+    if (!audioService.currentSong && props.song) {
+        // 如果当前没有播放中的歌曲，加载当前歌曲
+        audioService.playSong(props.song)
+        if (!props.playing) {
+            // 如果初始状态是不播放，则暂停
+            audioService.pause()
+        }
     }
     
-    // 监听音频播放进度更新
-    audioContext.onTimeUpdate(() => {
+    // 监听音频播放状态变化
+    audioService.onPlay(() => {
+        isPlaying.value = true
+    })
+    
+    audioService.onPause(() => {
+        isPlaying.value = false
+    })
+    
+    audioService.onTimeUpdate((currentTime, duration, prog) => {
         if (!isDragging.value) {
-            currentTime.value = audioContext.currentTime
-            progress.value = audioContext.currentTime / audioContext.duration
+            currentTime.value = currentTime
+            progress.value = prog
         }
     })
+    
+    // 同步当前状态
+    isPlaying.value = audioService.isPlaying
+    progress.value = audioService.progress
+    currentTime.value = audioService.currentTime
+    playMode.value = audioService.playMode
 })
 
-// 组件卸载时释放资源
+// 组件卸载时的逻辑
 onUnmounted(() => {
-    audioContext.destroy()
+    // 实际应用中应该移除事件监听，但audioService目前没有提供移除单个监听器的方法
+    // 这里不调用removeAllListeners()，因为可能会影响其他组件
 })
 </script>
 

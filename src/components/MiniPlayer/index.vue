@@ -40,6 +40,7 @@
 <script setup lang="ts">
 import {ref, computed, onMounted, watch} from 'vue'
 import Taro from '@tarojs/taro'
+import { audioService } from '../../services/audioService'
 
 // 定义组件的props
 const props = defineProps({
@@ -93,12 +94,14 @@ watch(() => props.progress, (newVal) => {
 
 // 切换播放/暂停状态
 const togglePlay = () => {
-  isPlaying.value = !isPlaying.value
-  if (isPlaying.value) {
+  if (!isPlaying.value) {
+    audioService.play()
     emit('play')
   } else {
+    audioService.pause()
     emit('pause')
   }
+  // 状态会通过audioService的事件回调更新
 }
 
 // 显示播放列表
@@ -113,11 +116,34 @@ const navigateToPlayer = () => {
   })
 }
 
-// 检查文本是否溢出需要滚动
+// 检查文本是否溢出需要滚动并设置音频事件监听
 onMounted(() => {
   // 在实际应用中，这里应该有检测文本宽度的逻辑
   // 简化起见，这里假设文本总是需要滚动
   isTextOverflow.value = true
+  
+  // 监听音频服务的事件
+  audioService.onPlay(() => {
+    isPlaying.value = true
+  })
+  
+  audioService.onPause(() => {
+    isPlaying.value = false
+  })
+  
+  audioService.onTimeUpdate((currentTime, duration, progress) => {
+    currentProgress.value = progress
+  })
+  
+  // 同步当前状态
+  isPlaying.value = audioService.isPlaying
+  currentProgress.value = audioService.progress
+})
+
+// 组件卸载时移除事件监听
+onUnmounted(() => {
+  // 实际应用中应该移除事件监听，但audioService目前没有提供移除单个监听器的方法
+  // 这里不调用removeAllListeners()，因为可能会影响其他组件
 })
 </script>
 
