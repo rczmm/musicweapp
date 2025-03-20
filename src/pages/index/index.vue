@@ -543,9 +543,9 @@ const audioContext = ref<Taro.InnerAudioContext | null>(null)
 const handlePlay = () => {
   isPlaying.value = true
   if (audioContext.value) {
+    console.log('开始播放:', currentPlayingSong.value.title)
     audioContext.value.play()
   }
-  console.log('开始播放:', currentPlayingSong.value.title)
   // 模拟播放进度更新
   startProgressUpdate()
 }
@@ -554,9 +554,8 @@ const handlePause = () => {
   isPlaying.value = false
   if (audioContext.value) {
     audioContext.value.pause()
-    // stopProgressUpdate() // No need to manually stop progress
+    console.log('暂停播放:', currentPlayingSong.value.title)
   }
-  console.log('暂停播放:', currentPlayingSong.value.title)
 }
 
 const handleShowPlaylist = () => {
