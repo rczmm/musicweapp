@@ -288,6 +288,7 @@ const handlePlaylistTap = (playlist) => {
 const hotSongsByTag = ref({
   chinese: [
     {
+      url: 'https://example.com/song1.mp3',
       cover: 'https://picsum.photos/100/100?random=1',
       title: '起风了',
       artist: '买辣椒也用券'
