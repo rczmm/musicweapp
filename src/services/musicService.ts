@@ -1,15 +1,6 @@
 import Taro from '@tarojs/taro';
 import {Song} from './audioService';
 
-// 定义API返回的歌曲数据结构
-interface ApiSong {
-  id: number;
-  name: string;
-  singer: string;
-  album: string;
-  path: string;
-}
-
 // 定义API返回的歌单数据结构
 interface ApiPlaylist {
   id: number;
