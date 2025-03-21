@@ -298,11 +298,11 @@ const hotSongsByTag = ref({
 const loadSongs = async () => {
   try {
     const songs = await musicService.getSongs();
-    
+
     // 将获取的歌曲分配到不同的标签中
     // 这里简单地将所有歌曲放入chinese标签，实际应用中可以根据歌曲属性分类
     hotSongsByTag.value.chinese = songs;
-    
+
     // 复制一些歌曲到其他标签，实际应用中应该根据API返回的数据进行分类
     if (songs.length > 0) {
       hotSongsByTag.value.cantonese = [...songs];
@@ -321,23 +321,44 @@ const currentHotSongs = computed(() => {
 });
 
 // 推荐歌单数据
-const recommendedPlaylists = ref([
-  {
-    cover: 'https://picsum.photos/200/200?random=4',
-    title: '华语速爆新歌',
-    recommendReason: '根据收藏推荐'
-  },
-  {
-    cover: 'https://picsum.photos/200/200?random=5',
-    title: '流行趋势榜',
-    recommendReason: ''
-  },
-  {
-    cover: 'https://picsum.photos/200/200?random=6',
-    title: '怀旧经典',
-    recommendReason: ''
+const recommendedPlaylists = ref([]);
+
+// 加载推荐歌单
+const loadRecommendedPlaylists = async () => {
+  try {
+    const playlists = await musicService.getPlaylists();
+    if (playlists && playlists.length > 0) {
+      // 添加推荐理由
+      recommendedPlaylists.value = playlists.map((playlist, index) => ({
+        ...playlist,
+        recommendReason: index === 0 ? '根据收藏推荐' : ''
+      }));
+    }
+  } catch (error) {
+    console.error('加载推荐歌单失败:', error);
+    // 设置默认数据
+    recommendedPlaylists.value = [
+      {
+        id: '1',
+        cover: 'https://picsum.photos/200/200?random=4',
+        title: '华语速爆新歌',
+        recommendReason: '根据收藏推荐'
+      },
+      {
+        id: '2',
+        cover: 'https://picsum.photos/200/200?random=5',
+        title: '流行趋势榜',
+        recommendReason: ''
+      },
+      {
+        id: '3',
+        cover: 'https://picsum.photos/200/200?random=6',
+        title: '怀旧经典',
+        recommendReason: ''
+      }
+    ];
   }
-]);
+};
 
 // 上午好个性化推荐数据
 const morningRecommendations = ref([
@@ -453,7 +474,10 @@ const recommendedSongs = ref([
 onMounted(async () => {
   // 加载歌曲数据
   await loadSongs();
-  
+
+  // 加载推荐歌单
+  await loadRecommendedPlaylists();
+
   // 加载完成后更新状态
   isLoading.value = false;
 
@@ -494,33 +518,14 @@ const isPlaying = ref(false);
 const playProgress = ref(0);
 const audioContext = ref<Taro.InnerAudioContext | null>(null);
 
-// 播放器相关方法
-const handlePlay = () => {
-  isPlaying.value = true
-  audioContext.value = Taro.createInnerAudioContext()
-  audioContext.value.src = currentPlayingSong.value.audioUrl
-  if (audioContext.value) {
-    console.log('开始播放:', currentPlayingSong.value.title)
-    audioContext.value.play()
-  }
-  // 模拟播放进度更新
-  startProgressUpdate()
-};
 
-const handlePause = () => {
-  isPlaying.value = false
-  if (audioContext.value) {
-    audioContext.value.pause()
-    console.log('暂停播放:', currentPlayingSong.value.title)
-  }
-};
 
 const handleShowPlaylist = () => {
   show.value = true
   msg.value = '播放列表功能即将上线'
   // 跳转到播放列表页面
   Taro.navigateTo({
-    url: '/pages/playlist/index?id=current&title=当前播放列表'
+    url: '/pages/playlist/index' + '?id=' + currentPlayingSong.value.id
   })
   console.log('显示播放列表')
 };

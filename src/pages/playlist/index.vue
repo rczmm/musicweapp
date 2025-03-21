@@ -111,24 +111,35 @@ import { musicService } from '../../services/musicService'
 
 // 歌单信息
 const playlistInfo = ref({
-  id: '1',
-  title: '华语流行热歌榜',
-  creator: '音乐编辑部',
-  cover: 'https://picsum.photos/300/300?random=10',
-  description: '精选华语流行音乐热门歌曲，每周更新，让你随时了解最新流行趋势。',
-  playCount: '3.5亿',
-  collectCount: '256.8万',
-  songCount: 50,
-  updateTime: '每周五更新'
+  id: '',
+  title: '',
+  creator: '',
+  cover: '',
+  description: '',
+  playCount: '',
+  collectCount: '',
+  songCount: 0,
+  updateTime: ''
 })
 
 // 歌单歌曲列表
 const playlistSongs = ref([]);
 
 // 加载歌曲数据
-const loadSongs = async () => {
+const loadSongs = async (playlistId: string) => {
   try {
-    const songs = await musicService.getSongs();
+    const songs = await musicService.getPlaylistSongs(playlistId);
+
+    // 检查返回的歌曲数据是否为有效数组
+    if (!songs || !Array.isArray(songs)) {
+      console.error('返回的歌曲数据无效:', songs);
+      Taro.showToast({
+        title: '歌曲数据格式错误',
+        icon: 'none',
+        duration: 2000
+      });
+      return;
+    }
 
     // 将API返回的歌曲数据转换为播放列表所需的格式
     playlistSongs.value = songs.map(song => ({
@@ -137,9 +148,9 @@ const loadSongs = async () => {
       isHQ: true // 默认设置为高品质
     }));
   } catch (error) {
-    console.error('加载歌曲列表失败:', error);
+    console.error('加载歌单歌曲列表失败:', error);
     Taro.showToast({
-      title: '加载歌曲列表失败',
+      title: '加载歌单歌曲列表失败',
       icon: 'none',
       duration: 2000
     });
@@ -266,15 +277,42 @@ const handleShowPlaylist = () => {
   console.log('显示播放列表')
 }
 
+// 加载歌单详情
+const loadPlaylistInfo = async (playlistId: string) => {
+  try {
+    const playlist = await musicService.getPlaylistById(playlistId);
+    if (playlist) {
+      playlistInfo.value = playlist;
+    } else {
+      Taro.showToast({
+        title: '歌单不存在',
+        icon: 'none',
+        duration: 2000
+      });
+    }
+  } catch (error) {
+    console.error('加载歌单详情失败:', error);
+    Taro.showToast({
+      title: '加载歌单详情失败',
+      icon: 'none',
+      duration: 2000
+    });
+  }
+}
+
 // 页面加载时
 onMounted(() => {
   // 获取路由参数
   const params = Taro.getCurrentInstance().router.params
   const playlistId = params.id;
-  loadSongs()
+  console.log('歌单ID:', playlistId);
 
-  // 这里可以根据playlistId加载实际数据
-  console.log('加载歌单ID:', playlistId)
+  // 加载歌单详情
+  if (playlistId) {
+    loadPlaylistInfo(playlistId);
+    // 加载歌单对应的歌曲列表
+    loadSongs(playlistId);
+  }
 })
 </script>
 
