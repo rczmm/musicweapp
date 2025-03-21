@@ -49,7 +49,7 @@
             <text>歌单精选</text>
           </view>
           <view class="order-list">
-            <view class="order-item" v-for="(item,index) in orderList" :key="index">
+            <view class="order-item" v-for="(item,index) in orderList" :key="index" @tap="openPlaylist(item)">
               <image :src="item.image" mode="aspectFill" class="order-image"/>
               <view class="order-content">
                 <view class="order-title">
@@ -64,6 +64,25 @@
                 </view>
               </view>
             </view>
+          </view>
+
+          <!-- 专辑精选 -->
+          <view class="desc">
+            <text>专辑精选</text>
+          </view>
+          <view class="album-list">
+            <scroll-view class="album-scroll" scroll-x>
+              <view
+                v-for="album in albumResults"
+                :key="album.id"
+                class="album-item"
+                @tap="openAlbum(album)"
+              >
+                <image :src="album.cover" class="album-cover" mode="aspectFill"/>
+                <text class="album-title">{{ album.title }}</text>
+                <text class="album-artist">{{ album.artist }}</text>
+              </view>
+            </scroll-view>
           </view>
         </view>
         <view class="tab-content-item" v-if="currentIndex === 1">
@@ -133,11 +152,12 @@ import {Search as NutIconSearch} from '@nutui/icons-vue-taro';
 import {onMounted, ref, onUnmounted} from "vue";
 import Taro from "@tarojs/taro";
 import MiniPlayer from "../../components/MiniPlayer/index.vue";
-import { audioService } from "../../services/audioService";
-import { musicService } from "../../services/musicService";
+import {audioService} from "../../services/audioService";
+import {musicService} from "../../services/musicService";
 
 const searchKeyword = ref<string>('');
 const currentIndex = ref<number>(0);
+const currentTab = ref('songs'); // 当前标签页：songs, albums, playlists
 const currentPlayingSong = ref({
   id: '1',
   title: '来日方长',
@@ -186,6 +206,31 @@ const orderList = ref<any[]>([
     playCount: 23121,
     author: 'Tom'
   },
+]);
+
+// 专辑搜索结果
+const albumResults = ref<any[]>([
+  {
+    id: '1',
+    title: '周杰伦的床边故事',
+    artist: '周杰伦',
+    cover: 'https://picsum.photos/200/200?random=1',
+    releaseDate: '2016-06-24'
+  },
+  {
+    id: '2',
+    title: '魔杰座',
+    artist: '周杰伦',
+    cover: 'https://picsum.photos/200/200?random=2',
+    releaseDate: '2008-10-14'
+  },
+  {
+    id: '3',
+    title: '叶惠美',
+    artist: '周杰伦',
+    cover: 'https://picsum.photos/200/200?random=3',
+    releaseDate: '2003-07-31'
+  }
 ])
 
 const playSong = (song) => {
@@ -203,7 +248,7 @@ const playSong = (song) => {
   audioService.playSong(currentPlayingSong.value)
   isPlaying.value = true
   playProgress.value = 0
-  
+
   console.log('播放歌曲:', song.title)
   Taro.showToast({
     title: `正在播放: ${song.title}`,
@@ -240,17 +285,42 @@ const handleShowPlaylist = () => {
   })
 }
 
+// 打开专辑详情页
+const openAlbum = (album) => {
+  console.log('打开专辑:', album.title);
+  Taro.navigateTo({
+    url: `/pages/album/albumIndex?id=${album.id}`
+  });
+};
+
+// 打开歌单详情页
+const openPlaylist = (playlist) => {
+  console.log('打开歌单:', playlist.title);
+  Taro.navigateTo({
+    url: `/pages/playlist/index?id=${playlist.id}`
+  });
+};
+
+// 切换标签页
+const switchTab = (tab) => {
+  currentTab.value = tab;
+};
+
 const handleSearch = async () => {
   try {
     // 使用musicService搜索歌曲
     const songs = await musicService.searchSongs(searchKeyword.value);
-    
+
     // 更新歌曲列表
     musicList.value = songs.map(song => ({
       ...song,
       tags: ['音乐'] // 添加默认标签
     }));
-    
+
+    // 这里可以添加搜索专辑和歌单的逻辑
+    // 示例：模拟搜索专辑和歌单
+    // 实际项目中应该调用相应的API
+
     console.log('搜索结果:', songs);
   } catch (error) {
     console.error('搜索失败:', error);
@@ -279,20 +349,20 @@ onMounted(async () => {
       console.error('获取歌曲列表失败:', error);
     }
   }
-  
+
   // 初始化audioService事件监听
   audioService.onPlay(() => {
     isPlaying.value = true;
   });
-  
+
   audioService.onPause(() => {
     isPlaying.value = false;
   });
-  
+
   audioService.onTimeUpdate((currentTime, duration, progress) => {
     playProgress.value = progress;
   });
-  
+
   // 同步当前状态
   if (audioService.currentSong) {
     currentPlayingSong.value = audioService.currentSong;
@@ -399,20 +469,8 @@ onUnmounted(() => {
         font-weight: bold;
         margin: 10px 0;
       }
-
-      .order-author {
-        color: #666;
-      }
-
-      .order-play-count {
-        color: #d91111;
-      }
-
-
     }
-
   }
-
 }
 
 

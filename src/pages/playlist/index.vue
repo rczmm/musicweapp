@@ -14,7 +14,7 @@
     <!-- 歌单信息区域 -->
     <view class="playlist-info-section">
       <view class="playlist-header">
-        <image class="playlist-cover" :src="playlistInfo.cover" mode="aspectFill" />
+        <image class="playlist-cover" :src="playlistInfo.cover" mode="aspectFill"/>
         <view class="playlist-details">
           <text class="playlist-title">{{ playlistInfo.title }}</text>
           <text class="playlist-creator">{{ playlistInfo.creator }}</text>
@@ -88,7 +88,7 @@
           class="similar-playlist-item"
           @tap="openPlaylist(playlist)"
         >
-          <image :src="playlist.cover" class="similar-playlist-cover" mode="aspectFill" />
+          <image :src="playlist.cover" class="similar-playlist-cover" mode="aspectFill"/>
           <text class="similar-playlist-title">{{ playlist.title }}</text>
           <text class="similar-playlist-creator">by {{ playlist.creator }}</text>
         </view>
@@ -104,10 +104,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import {ref, computed, onMounted} from 'vue'
 import Taro from '@tarojs/taro'
 import MiniPlayer from '../../components/MiniPlayer/index.vue'
-import { musicService } from '../../services/musicService'
+import {musicService} from '../../services/musicService'
 
 // 歌单信息
 const playlistInfo = ref({
@@ -123,10 +123,10 @@ const playlistInfo = ref({
 })
 
 // 歌单歌曲列表
-const playlistSongs = ref([]);
+const playlistSongs = ref<any[]>([]);
 
 // 加载歌曲数据
-const loadSongs = async (playlistId: string) => {
+const loadSongs = async (playlistId: number) => {
   try {
     const songs = await musicService.getPlaylistSongs(playlistId);
 
@@ -227,7 +227,7 @@ const playAll = () => {
 }
 
 // 播放单曲
-const playSong = (song) => {
+const playSong = (song: any ) => {
   currentPlayingSong.value = {
     id: song.id,
     title: song.title,
