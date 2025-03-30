@@ -3,7 +3,7 @@
     <!-- 顶部导航栏 -->
     <view class="top-nav">
       <view class="title">个人主页</view>
-      <view class="settings-button" @tap="openSettings">
+      <view class="settings-button" @tap.stop="openSettings">
         <text class="settings-icon">⚙</text>
       </view>
     </view>
@@ -14,7 +14,9 @@
         <image class="user-avatar" :src="userInfo.avatar" mode="aspectFill"/>
         <view class="user-details">
           <view class="name-container">
-            <text class="username">{{ userInfo.username }}</text>
+             <view class="username-container">
+                <text class="username">{{ userInfo.username }}</text>
+             </view>
             <image v-if="userInfo.isVip" class="vip-badge" src="/assets/vip-badge.png"/>
           </view>
           <text class="user-bio">{{ userInfo.bio }}</text>
@@ -38,7 +40,7 @@
       </view>
 
       <!-- 编辑个人资料按钮 -->
-      <view class="edit-profile-button" @tap="editProfile">
+      <view class="edit-profile-button" @tap.stop="editProfile">
         <text>编辑资料</text>
       </view>
     </view>
@@ -83,7 +85,7 @@
           <text class="subscription-title">开通VIP会员</text>
           <text class="subscription-desc">享受无损音质和独家音乐内容</text>
         </view>
-        <view class="subscription-button" @tap="subscribeVip">
+        <view class="subscription-button" @tap.stop="subscribeVip">
           <text>立即开通</text>
         </view>
       </view>
@@ -97,15 +99,14 @@
       @touchend="handleTouchEnd"
     >
       <!-- 子标签页 -->
-      <view class="sub-tabs">
+      <view class="sub-tabs custom-scroll-container">
         <view
-          v-for="subTab in musicSubTabs"
-          :key="subTab.id"
-          class="sub-tab-item"
-          :class="{ 'active': currentMusicTab === subTab.id }"
-          @tap="switchMusicTab(subTab.id)"
-        >
-          <text>{{ subTab.name }}</text>
+            v-for="subTab in musicSubTabs"
+            :key="subTab.id"
+            class="sub-tab-item"
+            :class="{ 'active': currentMusicTab === subTab.id }"
+            @tap="switchMusicTab(subTab.id)">
+              {{ subTab.name }}
         </view>
       </view>
 
@@ -135,18 +136,18 @@
         <view class="section-header">
           <text class="section-title">年度歌单</text>
         </view>
-        <scroll-view class="playlist-scroll" scroll-x>
-          <view
-            v-for="playlist in yearlyPlaylists"
-            :key="playlist.id"
-            class="playlist-item"
-            @tap="openPlaylist(playlist)"
-          >
-            <image :src="playlist.cover" class="playlist-cover" mode="aspectFill"/>
-            <text class="playlist-name">{{ playlist.name }}</text>
-            <text class="playlist-year">{{ playlist.year }}</text>
-          </view>
-        </scroll-view>
+        <view class="playlist-scroll custom-scroll-container">
+            <view
+                v-for="playlist in yearlyPlaylists"
+                :key="playlist.id"
+                class="playlist-item"
+                @tap="openPlaylist(playlist)"
+            >
+                <image :src="playlist.cover" class="playlist-cover" mode="aspectFill"/>
+                <text class="playlist-name">{{ playlist.name }}</text>
+                <text class="playlist-year">{{ playlist.year }}</text>
+            </view>
+        </view>
       </view>
 
       <!-- 创建的歌单 -->
@@ -198,15 +199,14 @@
       @touchend="handleTouchEnd"
     >
       <!-- 播客子标签页 -->
-      <view class="sub-tabs">
+      <view class="sub-tabs custom-scroll-container">
         <view
-          v-for="subTab in podcastSubTabs"
-          :key="subTab.id"
-          class="sub-tab-item"
-          :class="{ 'active': currentPodcastTab === subTab.id }"
-          @tap="switchPodcastTab(subTab.id)"
-        >
-          <text>{{ subTab.name }}</text>
+            v-for="subTab in podcastSubTabs"
+            :key="subTab.id"
+            class="sub-tab-item"
+            :class="{ 'active': currentPodcastTab === subTab.id }"
+            @tap="switchPodcastTab(subTab.id)">
+            {{ subTab.name }}
         </view>
       </view>
 
@@ -274,7 +274,7 @@
         >
           <view class="note-header">
             <image :src="note.songCover" class="note-song-cover" mode="aspectFill"/>
-            <view class="note-song-info">
+            <view class="note-song-info" >
               <text class="note-song-name">{{ note.songName }}</text>
               <text class="note-song-artist">{{ note.artist }}</text>
             </view>
@@ -307,7 +307,7 @@
       </view>
 
       <!-- 添加笔记按钮 -->
-      <view class="add-note-button" @tap="addNewNote">
+      <view class="add-note-button" @tap.stop="addNewNote">
         <text class="add-icon">+</text>
       </view>
     </view>
@@ -315,7 +315,7 @@
 </template>
 
 <script setup lang="ts">
-import {ref} from 'vue'
+import { ref } from 'vue'
 import Taro from '@tarojs/taro'
 
 // 用户信息
@@ -326,7 +326,7 @@ const userInfo = ref<any>({
   bio: '音乐是我的生命 🎵',
   followers: 1234,
   level: 8,
-  listenTime: 3600 * 24 * 30 // 30天的秒数
+  listenTime: 3600 * 24 * 30 // 30天的秒数（用于计算听歌时长）
 })
 
 // 广告信息
@@ -335,33 +335,33 @@ const adInfo = ref({
   text: '解锁VIP，享受无损音质'
 })
 
-// 标签页配置
+// 顶部主标签页配置
 const tabs = [
-  {id: 'music', name: '音乐'},
-  {id: 'podcast', name: '播客'},
-  {id: 'notes', name: '笔记'}
+  { id: 'music', name: '音乐' },
+  { id: 'podcast', name: '播客' },
+  { id: 'notes', name: '笔记' }
 ]
 
-const currentTab = ref('music')
+const currentTab = ref('music') // 当前选中的主标签页，默认为“音乐”
 
 // 音乐子标签页配置
 const musicSubTabs = [
-  {id: 'recent', name: '最近'},
-  {id: 'created', name: '创建'},
-  {id: 'collection', name: '收藏'}
+  { id: 'recent', name: '最近' },
+  { id: 'created', name: '创建' },
+  { id: 'collection', name: '收藏' }
 ]
 
-const currentMusicTab = ref('collection')
+const currentMusicTab = ref('collection') // 当前选中的音乐子标签页，默认为“收藏”
 
 // 播客子标签页配置
 const podcastSubTabs = [
-  {id: 'subscribed', name: '订阅'},
-  {id: 'episodes', name: '单集'}
+  { id: 'subscribed', name: '订阅' },
+  { id: 'episodes', name: '单集' }
 ]
 
-const currentPodcastTab = ref('subscribed')
+const currentPodcastTab = ref('subscribed') // 当前选中的播客子标签页，默认为“订阅”
 
-// 订阅的播客
+// 订阅的播客列表数据
 const subscribedPodcasts = ref([
   {
     id: 1,
@@ -386,7 +386,7 @@ const subscribedPodcasts = ref([
   }
 ])
 
-// 收藏的播客单集
+// 收藏的播客单集列表数据
 const favoritePodcastEpisodes = ref([
   {
     id: 1,
@@ -404,7 +404,7 @@ const favoritePodcastEpisodes = ref([
   }
 ])
 
-// 音乐笔记
+// 音乐笔记列表数据
 const musicNotes = ref([
   {
     id: 1,
@@ -433,7 +433,7 @@ const musicNotes = ref([
   }
 ])
 
-// VIP特权
+// VIP特权列表数据
 const vipPrivileges = ref([
   {
     icon: 'https://picsum.photos/40/40?random=30',
@@ -453,6 +453,7 @@ const vipPrivileges = ref([
   }
 ])
 
+// 收藏的音乐列表数据
 const favoriteMusic = ref<any[]>([
   {
     id: 1,
@@ -474,16 +475,19 @@ const favoriteMusic = ref<any[]>([
   }
 ]);
 
+// 年度歌单列表数据
 const yearlyPlaylists = ref<any[]>([
-  {id: 1, name: '2022年度歌单', year: '2022', cover: 'https://picsum.photos/200/200?random=53'},
-  {id: 2, name: '2023年度歌单', year: '2023', cover: 'https://picsum.photos/200/200?random=54'}
+  { id: 1, name: '2022年度歌单', year: '2022', cover: 'https://picsum.photos/200/200?random=53' },
+  { id: 2, name: '2023年度歌单', year: '2023', cover: 'https://picsum.photos/200/200?random=54' }
 ]);
 
+// 创建的歌单列表数据
 const createdPlaylists = ref<any[]>([
-  {id: 1, name: '我的流行歌单', songCount: 25, playCount: 1200, cover: 'https://picsum.photos/100/100?random=55'},
-  {id: 2, name: '放松时刻', songCount: 15, playCount: 500, cover: 'https://picsum.photos/100/100?random=56'}
+  { id: 1, name: '我的流行歌单', songCount: 25, playCount: 1200, cover: 'https://picsum.photos/100/100?random=55' },
+  { id: 2, name: '放松时刻', songCount: 15, playCount: 500, cover: 'https://picsum.photos/100/100?random=56' }
 ]);
 
+// 最近播放列表数据
 const recentPlayed = ref<any[]>([
   {
     id: 1,
@@ -512,16 +516,18 @@ const recentPlayed = ref<any[]>([
 ]);
 
 
-// 方法
+// 方法/函数 (以下是对每个函数的详细中文解释)
+
+// 1. openSettings: 打开设置，目前提示“即将上线”。
 const openSettings = () => {
   Taro.showToast({
-    title: '设置功能即将上线',
-    icon: 'none',
-    duration: 2000
+    title: '设置功能即将上线', // 提示文字
+    icon: 'none', // 不显示图标
+    duration: 2000 // 提示持续时间（2秒）
   })
-
 }
 
+// 2. editProfile: 编辑个人资料，目前提示“即将上线”。
 const editProfile = () => {
   Taro.showToast({
     title: '编辑个人资料功能即将上线',
@@ -530,46 +536,54 @@ const editProfile = () => {
   })
 }
 
+// 3. subscribeVip: 弹出VIP订阅确认框，询问用户是否订阅VIP。
 const subscribeVip = () => {
   Taro.showModal({
-    title: 'VIP会员订阅',
-    content: '是否立即开通VIP会员，享受无损音质和更多特权？',
-    confirmText: '立即开通',
-    cancelText: '暂不开通',
+    title: 'VIP会员订阅', // 弹窗标题
+    content: '是否立即开通VIP会员，享受无损音质和更多特权？', // 弹窗内容
+    confirmText: '立即开通', // 确认按钮文字
+    cancelText: '暂不开通', // 取消按钮文字
     success: function (res) {
       if (res.confirm) {
         console.log('用户点击确定')
-        // 处理VIP订阅逻辑
+        // 处理VIP订阅逻辑（例如：跳转到支付页面）
       } else if (res.cancel) {
         console.log('用户点击取消')
+        // 处理取消操作
       }
     }
   })
 }
 
+// 4. switchTab: 切换顶部主标签页。
 const switchTab = (tabId: string) => {
-  currentTab.value = tabId
+  currentTab.value = tabId // 将当前选中的主标签页ID设置为传入的tabId
 }
 
+// 5. switchMusicTab: 切换音乐子标签页。
 const switchMusicTab = (tabId: string) => {
-  currentMusicTab.value = tabId
+  currentMusicTab.value = tabId // 将当前选中的音乐子标签页ID设置为传入的tabId
 }
 
+// 6. switchPodcastTab: 切换播客子标签页。
 const switchPodcastTab = (tabId: string) => {
-  currentPodcastTab.value = tabId
+  currentPodcastTab.value = tabId // 将当前选中的播客子标签页ID设置为传入的tabId
 }
 
+// 7. formatListenTime: 格式化听歌时长，将秒数转换为天数。
 const formatListenTime = (seconds: number) => {
-  const days = Math.floor(seconds / (3600 * 24))
+  const days = Math.floor(seconds / (3600 * 24)) // 计算天数
   return `${days}天`
 }
 
+// 8. formatDuration: 格式化时长，将秒数转换为分钟:秒数（例如：3:45）。
 const formatDuration = (seconds: number) => {
-  const minutes = Math.floor(seconds / 60)
-  const remainingSeconds = seconds % 60
-  return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`
+  const minutes = Math.floor(seconds / 60) // 计算分钟数
+  const remainingSeconds = seconds % 60 // 计算剩余秒数
+  return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}` // 格式化输出
 }
 
+// 9. playSong: 播放歌曲（模拟），显示播放提示。
 const playSong = (song: any) => {
   console.log('播放歌曲', song.name)
   Taro.showToast({
@@ -578,14 +592,16 @@ const playSong = (song: any) => {
   })
 }
 
+// 10. openPlaylist: 打开歌单详情页。
 const openPlaylist = (playlist: any) => {
   console.log('打开歌单', playlist.name)
-  // 跳转到歌单详情页
+  // 跳转到歌单详情页（需要对歌单名称进行URL编码）
   Taro.navigateTo({
     url: `/pages/playlist/index?id=${playlist.id}&name=${encodeURIComponent(playlist.name)}`
   })
 }
 
+// 11. playItem: 播放音乐或专辑（模拟），显示播放提示。
 const playItem = (item: any) => {
   console.log('播放项目', item.name)
   Taro.showToast({
@@ -594,14 +610,16 @@ const playItem = (item: any) => {
   })
 }
 
+// 12. openPodcast: 打开播客详情页。
 const openPodcast = (podcast: any) => {
   console.log('打开播客', podcast.name)
-  // 跳转到播客详情页
+  // 跳转到播客详情页（需要对播客名称进行URL编码）
   Taro.navigateTo({
     url: `/pages/podcast/index?id=${podcast.id}&name=${encodeURIComponent(podcast.name)}`
   })
 }
 
+// 13. playPodcastEpisode: 播放播客单集（模拟），显示播放提示。
 const playPodcastEpisode = (episode: any) => {
   console.log('播放播客单集', episode.name)
   Taro.showToast({
@@ -610,6 +628,7 @@ const playPodcastEpisode = (episode: any) => {
   })
 }
 
+// 14. openNote: 打开笔记，目前只是显示一个提示。
 const openNote = (note: any) => {
   Taro.showToast({
     title: `打开笔记：${note.id}`,
@@ -617,13 +636,15 @@ const openNote = (note: any) => {
   })
 }
 
+// 15. previewImage: 预览图片，全屏显示图片。
 const previewImage = (images: string[], current: number) => {
   Taro.previewImage({
-    current: images[current],
-    urls: images
+    current: images[current], // 当前显示的图片URL
+    urls: images // 所有图片URL的数组
   })
 }
 
+// 16. addNewNote: 打开新建笔记，目前只是显示一个提示。
 const addNewNote = () => {
   Taro.showToast({
     title: '打开新建笔记',
@@ -631,40 +652,48 @@ const addNewNote = () => {
   })
 }
 
-// 滚动处理
-const scrollStartY = ref(0)
-const scrollEndY = ref(0)
-const isScrolling = ref(false)
-const isLoadingMore = ref(false)
+// 滚动处理和无限加载
 
+// 17. scrollStartY, scrollEndY, isScrolling, isLoadingMore: 滚动状态变量。
+const scrollStartY = ref(0) // 滚动开始时的Y坐标
+const scrollEndY = ref(0) // 滚动结束时的Y坐标
+const isScrolling = ref(false) // 是否正在滚动
+const isLoadingMore = ref(false) // 是否正在加载更多
+
+// 18. handleScroll: 处理滚动事件，检查是否需要触发无限加载。
 const handleScroll = (e: any) => {
-  const touch = e.touches[0]
+  const touch = e.touches[0] // 获取触摸信息
+
+  // 记录开始滚动时的位置
   if (!isScrolling.value) {
     scrollStartY.value = touch.clientY
     isScrolling.value = true
   }
-  scrollEndY.value = touch.clientY
 
-  // 如果滚动到底部，触发加载更多
-  const container = e.currentTarget
+  scrollEndY.value = touch.clientY // 更新当前滚动位置
+
+  // 判断是否滚动到底部，并且当前没有在加载更多
+  const container = e.currentTarget // 获取当前滚动元素
   if (container.scrollHeight - container.scrollTop <= container.clientHeight + 50 && !isLoadingMore.value) {
-    loadMore()
+    loadMore() // 触发加载更多
   }
 }
 
+// 19. handleTouchEnd: 处理触摸结束事件（滚动结束）。
 const handleTouchEnd = () => {
-  isScrolling.value = false
+  isScrolling.value = false // 滚动结束后，设置isScrolling为false
 }
 
+// 20. loadMore: 加载更多内容（模拟）。
 const loadMore = () => {
-  if (isLoadingMore.value) return
+  if (isLoadingMore.value) return // 如果正在加载更多，则不执行
 
-  isLoadingMore.value = true
+  isLoadingMore.value = true // 设置正在加载更多
   console.log('加载更多内容')
 
-  // 模拟加载更多数据
+  // 模拟加载更多数据，1秒后执行
   setTimeout(() => {
-    // 根据当前标签页加载不同的内容
+    // 根据当前标签页动态添加更多内容
     if (currentTab.value === 'music') {
       if (currentMusicTab.value === 'collection') {
         // 加载更多收藏的音乐
@@ -685,15 +714,17 @@ const loadMore = () => {
         })
       }
     } else if (currentTab.value === 'podcast') {
-      // 加载更多播客内容
+      // 加载更多播客内容（待实现）
+      // 根据 currentPodcastTab 添加不同的播客内容
     } else if (currentTab.value === 'notes') {
-      // 加载更多笔记
+      // 加载更多笔记内容（待实现）
     }
 
-    isLoadingMore.value = false
+    isLoadingMore.value = false // 加载完成后，设置isLoadingMore为false
   }, 1000)
 }
 </script>
+
 
 <style lang="scss">
 .profile-page {
@@ -704,6 +735,7 @@ const loadMore = () => {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    height: 80px;
     padding: 20px 30px;
     background-color: #fff;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
@@ -751,13 +783,19 @@ const loadMore = () => {
         width: 120px;
         height: 120px;
         border-radius: 60px;
-        margin-right: 20px;
+        margin-right: 10px;
       }
 
       .user-details {
         flex: 1;
-
+      
         .name-container {
+          display: flex;
+          align-items: center;
+          margin-bottom: 10px;
+          width: 100%;
+          
+          .username-container{
           display: inline-flex;
           align-items: center;
           margin-bottom: 10px;
@@ -767,6 +805,7 @@ const loadMore = () => {
             font-weight: bold;
             color: #222;
             margin-right: 10px;
+          }
           }
 
           .vip-badge {
@@ -1007,10 +1046,12 @@ const loadMore = () => {
       display: flex;
       padding: 15px 20px;
       background-color: #fff;
-      border-bottom: 1px solid #f0f0f0;
+      white-space: nowrap;
       transition: border-color 0.3s ease;
 
-      .sub-tab-item {
+
+
+      .sub-tab-item{
         padding: 10px 20px;
         margin-right: 20px;
         font-size: 20px;
@@ -1019,6 +1060,7 @@ const loadMore = () => {
         border-radius: 20px;
         transition: background-color 0.3s ease, color 0.3s ease;
 
+      
         &.active {
           color: #fff;
           background: linear-gradient(to right, #ff6e7f, #bfe9ff);
@@ -1093,8 +1135,9 @@ const loadMore = () => {
       }
     }
 
-    .playlist-scroll {
+    .playlist-scroll{
       white-space: nowrap;
+
       margin: 0 -10px;
 
       .playlist-item {
@@ -1504,5 +1547,11 @@ const loadMore = () => {
   to {
     opacity: 1;
   }
+}
+
+.custom-scroll-container {
+    overflow-x: auto;
+    overflow-y: hidden;
+    white-space: nowrap;
 }
 </style>
