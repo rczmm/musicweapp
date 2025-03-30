@@ -11,11 +11,11 @@
     <!-- 用户基本信息区域 -->
     <view class="user-info-section">
       <view class="user-header">
-        <image class="user-avatar" :src="userInfo.avatar" mode="aspectFill" />
+        <image class="user-avatar" :src="userInfo.avatar" mode="aspectFill"/>
         <view class="user-details">
           <view class="name-container">
             <text class="username">{{ userInfo.username }}</text>
-            <image v-if="userInfo.isVip" class="vip-badge" src="/assets/vip-badge.png" />
+            <image v-if="userInfo.isVip" class="vip-badge" src="/assets/vip-badge.png"/>
           </view>
           <text class="user-bio">{{ userInfo.bio }}</text>
         </view>
@@ -45,7 +45,7 @@
 
     <!-- 广告横幅 -->
     <view class="ad-banner" v-if="adInfo">
-      <image :src="adInfo.image" mode="aspectFill" class="ad-image" />
+      <image :src="adInfo.image" mode="aspectFill" class="ad-image"/>
       <text class="ad-text">{{ adInfo.text }}</text>
     </view>
 
@@ -121,7 +121,7 @@
           class="song-item"
           @tap="playSong(song)"
         >
-          <image :src="song.cover" class="song-cover" mode="aspectFill" />
+          <image :src="song.cover" class="song-cover" mode="aspectFill"/>
           <view class="song-info">
             <text class="song-name">{{ song.name }}</text>
             <text class="song-artist">{{ song.artist }}</text>
@@ -142,7 +142,7 @@
             class="playlist-item"
             @tap="openPlaylist(playlist)"
           >
-            <image :src="playlist.cover" class="playlist-cover" mode="aspectFill" />
+            <image :src="playlist.cover" class="playlist-cover" mode="aspectFill"/>
             <text class="playlist-name">{{ playlist.name }}</text>
             <text class="playlist-year">{{ playlist.year }}</text>
           </view>
@@ -161,7 +161,7 @@
           class="playlist-card"
           @tap="openPlaylist(playlist)"
         >
-          <image :src="playlist.cover" class="playlist-cover" mode="aspectFill" />
+          <image :src="playlist.cover" class="playlist-cover" mode="aspectFill"/>
           <view class="playlist-info">
             <text class="playlist-name">{{ playlist.name }}</text>
             <text class="playlist-desc">{{ playlist.songCount }}首歌 · {{ playlist.playCount }}次播放</text>
@@ -180,7 +180,7 @@
           class="recent-item"
           @tap="playItem(item)"
         >
-          <image :src="item.cover" class="recent-cover" mode="aspectFill" />
+          <image :src="item.cover" class="recent-cover" mode="aspectFill"/>
           <view class="recent-info">
             <text class="recent-name">{{ item.name }}</text>
             <text class="recent-desc">{{ item.type }} · {{ item.artist }}</text>
@@ -222,7 +222,7 @@
           class="podcast-item"
           @tap="openPodcast(podcast)"
         >
-          <image :src="podcast.cover" class="podcast-cover" mode="aspectFill" />
+          <image :src="podcast.cover" class="podcast-cover" mode="aspectFill"/>
           <view class="podcast-info">
             <text class="podcast-name">{{ podcast.name }}</text>
             <text class="podcast-author">{{ podcast.author }}</text>
@@ -242,7 +242,7 @@
           class="episode-item"
           @tap="playPodcastEpisode(episode)"
         >
-          <image :src="episode.cover" class="episode-cover" mode="aspectFill" />
+          <image :src="episode.cover" class="episode-cover" mode="aspectFill"/>
           <view class="episode-info">
             <text class="episode-name">{{ episode.name }}</text>
             <text class="episode-podcast">{{ episode.podcastName }}</text>
@@ -273,7 +273,7 @@
           @tap="openNote(note)"
         >
           <view class="note-header">
-            <image :src="note.songCover" class="note-song-cover" mode="aspectFill" />
+            <image :src="note.songCover" class="note-song-cover" mode="aspectFill"/>
             <view class="note-song-info">
               <text class="note-song-name">{{ note.songName }}</text>
               <text class="note-song-artist">{{ note.artist }}</text>
@@ -315,7 +315,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import {ref} from 'vue'
 import Taro from '@tarojs/taro'
 
 // 用户信息
@@ -337,26 +337,26 @@ const adInfo = ref({
 
 // 标签页配置
 const tabs = [
-  { id: 'music', name: '音乐' },
-  { id: 'podcast', name: '播客' },
-  { id: 'notes', name: '笔记' }
+  {id: 'music', name: '音乐'},
+  {id: 'podcast', name: '播客'},
+  {id: 'notes', name: '笔记'}
 ]
 
 const currentTab = ref('music')
 
 // 音乐子标签页配置
 const musicSubTabs = [
-  { id: 'recent', name: '最近' },
-  { id: 'created', name: '创建' },
-  { id: 'collection', name: '收藏' }
+  {id: 'recent', name: '最近'},
+  {id: 'created', name: '创建'},
+  {id: 'collection', name: '收藏'}
 ]
 
 const currentMusicTab = ref('collection')
 
 // 播客子标签页配置
 const podcastSubTabs = [
-  { id: 'subscribed', name: '订阅' },
-  { id: 'episodes', name: '单集' }
+  {id: 'subscribed', name: '订阅'},
+  {id: 'episodes', name: '单集'}
 ]
 
 const currentPodcastTab = ref('subscribed')
@@ -475,31 +475,50 @@ const favoriteMusic = ref<any[]>([
 ]);
 
 const yearlyPlaylists = ref<any[]>([
-  { id: 1, name: '2022年度歌单', year: '2022', cover: 'https://picsum.photos/200/200?random=53' },
-  { id: 2, name: '2023年度歌单', year: '2023', cover: 'https://picsum.photos/200/200?random=54' }
+  {id: 1, name: '2022年度歌单', year: '2022', cover: 'https://picsum.photos/200/200?random=53'},
+  {id: 2, name: '2023年度歌单', year: '2023', cover: 'https://picsum.photos/200/200?random=54'}
 ]);
 
 const createdPlaylists = ref<any[]>([
-  { id: 1, name: '我的流行歌单', songCount: 25, playCount: 1200, cover: 'https://picsum.photos/100/100?random=55' },
-  { id: 2, name: '放松时刻', songCount: 15, playCount: 500, cover: 'https://picsum.photos/100/100?random=56' }
+  {id: 1, name: '我的流行歌单', songCount: 25, playCount: 1200, cover: 'https://picsum.photos/100/100?random=55'},
+  {id: 2, name: '放松时刻', songCount: 15, playCount: 500, cover: 'https://picsum.photos/100/100?random=56'}
 ]);
 
 const recentPlayed = ref<any[]>([
-  { id: 1, name: '歌曲X', type: '音乐', artist: '歌手X', playTime: '5分钟前', cover: 'https://picsum.photos/100/100?random=57' },
-  { id: 2, name: '专辑Y', type: '专辑', artist: '歌手Y', playTime: '10分钟前', cover: 'https://picsum.photos/100/100?random=58' },
-  { id: 3, name: '歌曲Z', type: '音乐', artist: '歌手Z', playTime: '15分钟前', cover: 'https://picsum.photos/100/100?random=59' }
+  {
+    id: 1,
+    name: '歌曲X',
+    type: '音乐',
+    artist: '歌手X',
+    playTime: '5分钟前',
+    cover: 'https://picsum.photos/100/100?random=57'
+  },
+  {
+    id: 2,
+    name: '专辑Y',
+    type: '专辑',
+    artist: '歌手Y',
+    playTime: '10分钟前',
+    cover: 'https://picsum.photos/100/100?random=58'
+  },
+  {
+    id: 3,
+    name: '歌曲Z',
+    type: '音乐',
+    artist: '歌手Z',
+    playTime: '15分钟前',
+    cover: 'https://picsum.photos/100/100?random=59'
+  }
 ]);
-
-
 
 
 // 方法
 const openSettings = () => {
-    Taro.showToast({
-        title: '设置功能即将上线',
-        icon: 'none',
-        duration: 2000
-    })
+  Taro.showToast({
+    title: '设置功能即将上线',
+    icon: 'none',
+    duration: 2000
+  })
 
 }
 
@@ -512,20 +531,12 @@ const editProfile = () => {
 }
 
 const subscribeVip = () => {
-   Taro.showToast({
-    title: '订阅VIP功能即将上线',
-    icon: 'none',
-    duration: 2000
-  })
-}
-
-const subscribeVip = () => {
   Taro.showModal({
     title: 'VIP会员订阅',
     content: '是否立即开通VIP会员，享受无损音质和更多特权？',
     confirmText: '立即开通',
     cancelText: '暂不开通',
-    success: function(res) {
+    success: function (res) {
       if (res.confirm) {
         console.log('用户点击确定')
         // 处理VIP订阅逻辑
@@ -561,9 +572,10 @@ const formatDuration = (seconds: number) => {
 
 const playSong = (song: any) => {
   console.log('播放歌曲', song.name)
-    Taro.showToast({
+  Taro.showToast({
     title: `播放歌曲：${song.name}`,
     icon: 'none'
+  })
 }
 
 const openPlaylist = (playlist: any) => {
@@ -576,10 +588,10 @@ const openPlaylist = (playlist: any) => {
 
 const playItem = (item: any) => {
   console.log('播放项目', item.name)
-    Taro.showToast({
-        title: `播放项目：${item.name}`,
-        icon: 'none'
-    })
+  Taro.showToast({
+    title: `播放项目：${item.name}`,
+    icon: 'none'
+  })
 }
 
 const openPodcast = (podcast: any) => {
@@ -592,10 +604,10 @@ const openPodcast = (podcast: any) => {
 
 const playPodcastEpisode = (episode: any) => {
   console.log('播放播客单集', episode.name)
-    Taro.showToast({
-        title: `播放播客单集：${episode.name}`,
-        icon: 'none'
-    })
+  Taro.showToast({
+    title: `播放播客单集：${episode.name}`,
+    icon: 'none'
+  })
 }
 
 const openNote = (note: any) => {
@@ -604,7 +616,7 @@ const openNote = (note: any) => {
     icon: 'none'
   })
 }
-    
+
 const previewImage = (images: string[], current: number) => {
   Taro.previewImage({
     current: images[current],
@@ -612,11 +624,11 @@ const previewImage = (images: string[], current: number) => {
   })
 }
 
-const addNewNote = ()=>{
-    Taro.showToast({
-        title: '打开新建笔记',
-        icon: 'none'
-    })
+const addNewNote = () => {
+  Taro.showToast({
+    title: '打开新建笔记',
+    icon: 'none'
+  })
 }
 
 // 滚动处理
@@ -674,7 +686,7 @@ const loadMore = () => {
       }
     } else if (currentTab.value === 'podcast') {
       // 加载更多播客内容
-    }else if (currentTab.value === 'notes'){
+    } else if (currentTab.value === 'notes') {
       // 加载更多笔记
     }
 
@@ -706,10 +718,11 @@ const loadMore = () => {
       width: 40px;
       height: 40px;
       transition: background-color 0.3s ease;
-      &:active{
+
+      &:active {
         background-color: #e0e0e0;
       }
-      
+
       .settings-icon {
         font-size: 24px;
         color: #555;
@@ -804,7 +817,8 @@ const loadMore = () => {
       border: none;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
       transition: transform 0.3s ease, box-shadow 0.3s ease;
-      &:active{
+
+      &:active {
         transform: scale(0.95);
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
       }
@@ -828,7 +842,7 @@ const loadMore = () => {
     position: relative;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 
-    .ad-image{
+    .ad-image {
       width: 100%;
       height: 200px;
     }
@@ -871,7 +885,7 @@ const loadMore = () => {
     .privilege-list {
       display: flex;
       flex-wrap: wrap;
-      
+
 
       .privilege-item {
         display: flex;
@@ -930,7 +944,8 @@ const loadMore = () => {
         color: #222;
         border-radius: 25px;
         transition: transform 0.3s ease, box-shadow 0.3s ease;
-        &:active{
+
+        &:active {
           transform: scale(0.95);
           box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
         }
@@ -963,7 +978,7 @@ const loadMore = () => {
         font-weight: bold;
 
         &::after {
-          content: '';
+          content: '1';
           position: absolute;
           bottom: 0;
           left: 50%;
@@ -1028,7 +1043,7 @@ const loadMore = () => {
           font-weight: bold;
           color: #222;
         }
-        
+
         .song-count {
           font-size: 24px;
           color: #999;
@@ -1042,9 +1057,11 @@ const loadMore = () => {
       display: flex;
       align-items: center;
       padding: 10px 0;
-      &:hover{
+
+      &:hover {
         background-color: #f8f8f8;
       }
+
       border-bottom: 1px solid #eee;
 
       .song-cover {
@@ -1136,9 +1153,11 @@ const loadMore = () => {
         align-items: center;
         padding: 15px 0;
         transition: background-color 0.3s ease;
-        &:hover{
+
+        &:hover {
           background-color: #f8f8f8;
         }
+
         border-bottom: 1px solid #eee;
 
         .playlist-cover {
@@ -1186,9 +1205,11 @@ const loadMore = () => {
         display: flex;
         align-items: center;
         transition: background-color 0.3s ease;
-        &:hover{
+
+        &:hover {
           background-color: #f8f8f8;
         }
+
         padding: 15px 0;
         border-bottom: 1px solid #eee;
 
@@ -1202,7 +1223,7 @@ const loadMore = () => {
         .recent-info {
           flex: 1;
 
-          .recent-name{
+          .recent-name {
             font-size: 24px;
             color: #333;
             margin-bottom: 5px;
@@ -1251,9 +1272,11 @@ const loadMore = () => {
         display: flex;
         align-items: center;
         transition: background-color 0.3s ease;
-        &:hover{
+
+        &:hover {
           background-color: #f8f8f8;
         }
+
         padding: 15px 0;
         border-bottom: 1px solid #eee;
 
@@ -1267,7 +1290,7 @@ const loadMore = () => {
         .podcast-info {
           flex: 1;
 
-          .podcast-name{
+          .podcast-name {
             font-size: 28px;
             color: #333;
             margin-bottom: 5px;
@@ -1290,9 +1313,11 @@ const loadMore = () => {
         display: flex;
         align-items: center;
         transition: background-color 0.3s ease;
-        &:hover{
+
+        &:hover {
           background-color: #f8f8f8;
         }
+
         padding: 15px 0;
         border-bottom: 1px solid #eee;
 
@@ -1357,7 +1382,8 @@ const loadMore = () => {
         border-bottom: 1px solid #eee;
 
         transition: background-color 0.3s ease;
-        &:hover{
+
+        &:hover {
           background-color: #f8f8f8;
         }
 
@@ -1422,7 +1448,7 @@ const loadMore = () => {
         .note-footer {
           display: flex;
 
-          .note-likes,.note-comments {
+          .note-likes, .note-comments {
             display: flex;
             align-items: center;
             margin-right: 20px;
@@ -1457,20 +1483,26 @@ const loadMore = () => {
       align-items: center;
       justify-content: center;
       transition: transform 0.3s ease, box-shadow 0.3s ease;
-      &:active{
+
+      &:active {
         transform: scale(0.95);
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
       }
 
-      .add-icon{
+      .add-icon {
         font-size: 40px;
         color: #fff;
       }
     }
   }
 }
+
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 </style>
