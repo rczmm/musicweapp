@@ -8,7 +8,7 @@ export default {
     'pages/profile/index',
     'pages/playlist/index',
     'pages/album/albumIndex',
-    'pages/search/index'
+    'pages/search/index',
   ],
   window: {
     backgroundTextStyle: 'light',
