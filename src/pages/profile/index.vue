@@ -2,9 +2,6 @@
   <view class="profile-page">
     <!-- 顶部导航栏 -->
     <view class="top-nav">
-      <view class="back-button" @tap="goBack">
-        <text class="back-icon">←</text>
-      </view>
       <view class="title">个人主页</view>
       <view class="settings-button" @tap="openSettings">
         <text class="settings-icon">⚙</text>
@@ -73,7 +70,7 @@
       </view>
       <view class="privilege-list">
         <view class="privilege-item" v-for="(privilege, index) in vipPrivileges" :key="index">
-          <image :src="privilege.icon" class="privilege-icon" />
+          <image :src="privilege.icon" class="privilege-icon" mode="aspectFill"/>
           <text class="privilege-name">{{ privilege.name }}</text>
         </view>
       </view>
@@ -497,21 +494,13 @@ const recentPlayed = ref<any[]>([
 
 
 // 方法
-const goBack = () => {
-  Taro.navigateBack()
-}
-
 const openSettings = () => {
-  Taro.showActionSheet({
-    itemList: ['账号设置', '通知设置', '隐私设置', '关于我们'],
-    success: function (res) {
-      console.log('用户点击了第' + (res.tapIndex + 1) + '个按钮')
-      // 根据点击的选项执行相应操作
-    },
-    fail: function (res) {
-      console.log(res.errMsg)
-    }
-  })
+    Taro.showToast({
+        title: '设置功能即将上线',
+        icon: 'none',
+        duration: 2000
+    })
+
 }
 
 const editProfile = () => {
@@ -564,7 +553,9 @@ const formatDuration = (seconds: number) => {
 
 const playSong = (song: any) => {
   console.log('播放歌曲', song.name)
-  // 调用音频服务播放歌曲
+    Taro.showToast({
+    title: `播放歌曲：${song.name}`,
+    icon: 'none'
 }
 
 const openPlaylist = (playlist: any) => {
@@ -577,7 +568,10 @@ const openPlaylist = (playlist: any) => {
 
 const playItem = (item: any) => {
   console.log('播放项目', item.name)
-  // 根据项目类型调用不同的播放逻辑
+    Taro.showToast({
+        title: `播放项目：${item.name}`,
+        icon: 'none'
+    })
 }
 
 const openPodcast = (podcast: any) => {
@@ -590,12 +584,17 @@ const openPodcast = (podcast: any) => {
 
 const playPodcastEpisode = (episode: any) => {
   console.log('播放播客单集', episode.name)
-  // 调用音频服务播放播客
+    Taro.showToast({
+        title: `播放播客单集：${episode.name}`,
+        icon: 'none'
+    })
 }
 
 const openNote = (note: any) => {
-  console.log('打开笔记', note.id)
-  // 跳转到笔记详情页
+  Taro.showToast({
+    title: `打开笔记：${note.id}`,
+    icon: 'none'
+  })
 }
 
 const previewImage = (images: string[], current: number) => {
@@ -605,12 +604,11 @@ const previewImage = (images: string[], current: number) => {
   })
 }
 
-const addNewNote = () => {
-  Taro.showToast({
-    title: '添加笔记功能即将上线',
-    icon: 'none',
-    duration: 2000
-  })
+const addNewNote = ()=>{
+    Taro.showToast({
+        title: '打开新建笔记',
+        icon: 'none'
+    })
 }
 
 // 滚动处理
@@ -668,7 +666,7 @@ const loadMore = () => {
       }
     } else if (currentTab.value === 'podcast') {
       // 加载更多播客内容
-    } else if (currentTab.value === 'notes') {
+    }else if (currentTab.value === 'notes'){
       // 加载更多笔记
     }
 
@@ -690,11 +688,11 @@ const loadMore = () => {
     background-color: #fff;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 
-    .back-button,
     .settings-button {
       display: flex;
       align-items: center;
       justify-content: center;
+      margin-left: auto;
       background-color: #f5f5f5;
       border-radius: 50%;
       width: 40px;
@@ -704,7 +702,6 @@ const loadMore = () => {
         background-color: #e0e0e0;
       }
 
-      .back-icon,
       .settings-icon {
         font-size: 24px;
         color: #555;
@@ -866,12 +863,14 @@ const loadMore = () => {
     .privilege-list {
       display: flex;
       flex-wrap: wrap;
-      gap: 10px;
 
 
       .privilege-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
         width: 25%;
-        text-align: center;
         margin-bottom: 15px;
 
         .privilege-icon {
@@ -1021,7 +1020,7 @@ const loadMore = () => {
           font-weight: bold;
           color: #222;
         }
-        
+
         .song-count {
           font-size: 24px;
           color: #999;
@@ -1348,6 +1347,7 @@ const loadMore = () => {
       .note-item {
         padding: 15px 0;
         border-bottom: 1px solid #eee;
+
         transition: background-color 0.3s ease;
         &:hover{
           background-color: #f8f8f8;
@@ -1414,10 +1414,11 @@ const loadMore = () => {
         .note-footer {
           display: flex;
 
-          .note-likes, .note-comments {
+          .note-likes,.note-comments {
             display: flex;
             align-items: center;
             margin-right: 20px;
+            transition: color 0.3s ease;
 
             .like-icon, .comment-icon {
               font-size: 24px;
@@ -1431,6 +1432,7 @@ const loadMore = () => {
             }
           }
         }
+
       }
     }
 
