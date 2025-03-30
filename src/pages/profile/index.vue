@@ -456,13 +456,43 @@ const vipPrivileges = ref([
   }
 ])
 
-const favoriteMusic = ref<any[]>([]);
+const favoriteMusic = ref<any[]>([
+  {
+    id: 1,
+    name: '歌曲A',
+    artist: '歌手A',
+    cover: 'https://picsum.photos/100/100?random=50'
+  },
+  {
+    id: 2,
+    name: '歌曲B',
+    artist: '歌手B',
+    cover: 'https://picsum.photos/100/100?random=51'
+  },
+  {
+    id: 3,
+    name: '歌曲C',
+    artist: '歌手C',
+    cover: 'https://picsum.photos/100/100?random=52'
+  }
+]);
 
-const yearlyPlaylists = ref<any[]>([]);
+const yearlyPlaylists = ref<any[]>([
+  { id: 1, name: '2022年度歌单', year: '2022', cover: 'https://picsum.photos/200/200?random=53' },
+  { id: 2, name: '2023年度歌单', year: '2023', cover: 'https://picsum.photos/200/200?random=54' }
+]);
 
-const createdPlaylists = ref<any[]>([]);
+const createdPlaylists = ref<any[]>([
+  { id: 1, name: '我的流行歌单', songCount: 25, playCount: 1200, cover: 'https://picsum.photos/100/100?random=55' },
+  { id: 2, name: '放松时刻', songCount: 15, playCount: 500, cover: 'https://picsum.photos/100/100?random=56' }
+]);
 
-const recentPlayed = ref<any[]>([]);
+const recentPlayed = ref<any[]>([
+  { id: 1, name: '歌曲X', type: '音乐', artist: '歌手X', playTime: '5分钟前', cover: 'https://picsum.photos/100/100?random=57' },
+  { id: 2, name: '专辑Y', type: '专辑', artist: '歌手Y', playTime: '10分钟前', cover: 'https://picsum.photos/100/100?random=58' },
+  { id: 3, name: '歌曲Z', type: '音乐', artist: '歌手Z', playTime: '15分钟前', cover: 'https://picsum.photos/100/100?random=59' }
+]);
+
 
 
 
@@ -650,33 +680,43 @@ const loadMore = () => {
 <style lang="scss">
 .profile-page {
   min-height: 100vh;
-  background-color: #f5f5f5;
+  background-color: #f8f8f8;
 
   .top-nav {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 20px;
+    padding: 20px 30px;
     background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 
-    .back-button, .settings-button {
-      width: 60px;
-      height: 60px;
+    .back-button,
+    .settings-button {
       display: flex;
       align-items: center;
       justify-content: center;
+      background-color: #f5f5f5;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      transition: background-color 0.3s ease;
+      &:active{
+        background-color: #e0e0e0;
+      }
 
-      .back-icon, .settings-icon {
-        font-size: 36px;
-        color: #333;
+      .back-icon,
+      .settings-icon {
+        font-size: 24px;
+        color: #555;
       }
     }
 
     .title {
-      font-size: 32px;
+      font-size: 28px;
       font-weight: bold;
-      color: #333;
+      color: #222;
     }
+
   }
 
   .user-info-section {
@@ -685,6 +725,7 @@ const loadMore = () => {
 
     .user-header {
       display: flex;
+      flex-direction: row;
       align-items: center;
       margin-bottom: 30px;
 
@@ -699,24 +740,27 @@ const loadMore = () => {
         flex: 1;
 
         .name-container {
-          display: flex;
+          display: inline-flex;
           align-items: center;
           margin-bottom: 10px;
 
           .username {
-            font-size: 36px;
+            font-size: 30px;
             font-weight: bold;
-            color: #333;
+            color: #222;
             margin-right: 10px;
           }
 
           .vip-badge {
-            width: 40px;
-            height: 40px;
+            width: 30px;
+            height: 30px;
           }
         }
 
         .user-bio {
+          display: block;
+          width: 100%;
+          overflow: hidden;
           font-size: 28px;
           color: #666;
           line-height: 1.4;
@@ -725,34 +769,41 @@ const loadMore = () => {
     }
 
     .user-stats {
+      margin-top: 20px;
       display: flex;
       justify-content: space-around;
-      border-top: 1px solid #eee;
-      padding-top: 30px;
+      padding: 20px 0;
 
       .stat-item {
         text-align: center;
 
         .stat-value {
-          font-size: 32px;
-          font-weight: bold;
-          color: #333;
+          font-size: 26px;
+          color: #222;
           margin-bottom: 8px;
           display: block;
         }
 
         .stat-label {
-          font-size: 24px;
-          color: #999;
+          font-size: 22px;
+          color: #666;
         }
       }
     }
 
     .edit-profile-button {
-      margin-top: 20px;
-      padding: 10px 30px;
-      background-color: #f5f5f5;
-      border-radius: 30px;
+      background: linear-gradient(to right, #ff6e7f, #bfe9ff);
+      margin: 20px auto 0;
+      padding: 8px 20px;
+      border-radius: 25px;
+      border: none;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      &:active{
+        transform: scale(0.95);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+      }
+
       text-align: center;
       width: 200px;
       align-self: center;
@@ -766,12 +817,13 @@ const loadMore = () => {
   }
 
   .ad-banner {
-    margin: 20px;
-    border-radius: 20px;
+    margin: 15px;
+    border-radius: 15px;
     overflow: hidden;
     position: relative;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 
-    .ad-image {
+    .ad-image{
       width: 100%;
       height: 200px;
     }
@@ -780,39 +832,42 @@ const loadMore = () => {
       position: absolute;
       bottom: 20px;
       left: 20px;
-      color: #fff;
-      font-size: 28px;
+      color: #eee;
+      font-size: 24px;
       font-weight: bold;
       text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
     }
   }
 
   .vip-privileges {
-    background-color: #fff;
-    margin: 20px;
-    border-radius: 20px;
-    padding: 20px;
+    background: linear-gradient(to right, #ff9a9e, #fad0c4);
+    margin: 15px;
+    border-radius: 15px;
+    padding: 20px 25px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 
     .privilege-header {
       margin-bottom: 20px;
 
       .privilege-title {
-        font-size: 32px;
+        font-size: 26px;
         font-weight: bold;
-        color: #333;
+        color: #eee;
         display: block;
         margin-bottom: 5px;
       }
 
       .privilege-subtitle {
-        font-size: 24px;
-        color: #999;
+        font-size: 20px;
+        color: #fff;
       }
     }
 
     .privilege-list {
       display: flex;
       flex-wrap: wrap;
+      gap: 10px;
+
 
       .privilege-item {
         width: 25%;
@@ -820,31 +875,34 @@ const loadMore = () => {
         margin-bottom: 15px;
 
         .privilege-icon {
-          width: 60px;
-          height: 60px;
+          width: 50px;
+          height: 50px;
           margin-bottom: 8px;
         }
 
         .privilege-name {
-          font-size: 24px;
-          color: #666;
+          font-size: 18px;
+          color: #eee;
         }
       }
     }
   }
 
   .vip-subscription {
-    background-color: #fff;
-    margin: 20px;
-    border-radius: 20px;
-    padding: 20px;
+    background: linear-gradient(to right, #a1c4fd, #c2e9fb);
+    margin: 15px;
+    border-radius: 15px;
+    padding: 20px 25px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 
     .subscription-content {
       display: flex;
       justify-content: space-between;
       align-items: center;
 
+
       .subscription-info {
+
         .subscription-title {
           font-size: 32px;
           font-weight: bold;
@@ -861,8 +919,14 @@ const loadMore = () => {
 
       .subscription-button {
         padding: 10px 20px;
-        background-color: #1aad19;
-        border-radius: 30px;
+        background: #fff;
+        color: #222;
+        border-radius: 25px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        &:active{
+          transform: scale(0.95);
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+        }
 
         text {
           font-size: 28px;
@@ -872,31 +936,35 @@ const loadMore = () => {
     }
   }
 
+
   .content-tabs {
     display: flex;
     background-color: #fff;
     padding: 0 20px;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid #f0f0f0;
+    transition: border-color 0.3s ease;
 
     .tab-item {
-      padding: 20px 30px;
-      font-size: 28px;
-      color: #666;
+      padding: 15px 20px;
+      font-size: 24px;
+      color: #888;
       position: relative;
+      transition: color 0.3s ease;
 
       &.active {
-        color: #333;
+        color: #222;
         font-weight: bold;
 
         &::after {
           content: '';
           position: absolute;
           bottom: 0;
-          left: 30px;
-          right: 30px;
-          height: 4px;
-          background-color: #1aad19;
-          border-radius: 2px;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 50%;
+          height: 3px;
+          background: linear-gradient(to right, #ff6e7f, #bfe9ff);
+          border-radius: 1px;
         }
       }
     }
@@ -904,31 +972,40 @@ const loadMore = () => {
 
   .content-area {
     height: calc(100vh - 400px);
-    overflow-y: auto;
+    overflow-y: scroll;
     -webkit-overflow-scrolling: touch;
+    transition: opacity 0.3s ease;
+
+    &.fade-in {
+      opacity: 0;
+      animation: fadeIn 0.3s ease forwards;
+    }
 
     .sub-tabs {
       display: flex;
-      padding: 20px;
+      padding: 15px 20px;
       background-color: #fff;
+      border-bottom: 1px solid #f0f0f0;
+      transition: border-color 0.3s ease;
 
       .sub-tab-item {
         padding: 10px 20px;
         margin-right: 20px;
-        font-size: 24px;
-        color: #666;
-        background-color: #f5f5f5;
-        border-radius: 30px;
+        font-size: 20px;
+        color: #777;
+        background-color: #f8f8f8;
+        border-radius: 20px;
+        transition: background-color 0.3s ease, color 0.3s ease;
 
         &.active {
           color: #fff;
-          background-color: #1aad19;
+          background: linear-gradient(to right, #ff6e7f, #bfe9ff);
         }
       }
     }
 
     .favorite-music, .yearly-playlist {
-      background-color: #fff;
+      background-color: #ffffff;
       margin: 20px;
       border-radius: 20px;
       padding: 20px;
@@ -940,11 +1017,11 @@ const loadMore = () => {
         margin-bottom: 20px;
 
         .section-title {
-          font-size: 32px;
+          font-size: 26px;
           font-weight: bold;
-          color: #333;
+          color: #222;
         }
-
+        
         .song-count {
           font-size: 24px;
           color: #999;
@@ -953,9 +1030,14 @@ const loadMore = () => {
     }
 
     .song-item {
+      background-color: #fff;
+      transition: background-color 0.3s ease;
       display: flex;
       align-items: center;
-      padding: 15px 0;
+      padding: 10px 0;
+      &:hover{
+        background-color: #f8f8f8;
+      }
       border-bottom: 1px solid #eee;
 
       .song-cover {
@@ -969,8 +1051,8 @@ const loadMore = () => {
         flex: 1;
 
         .song-name {
-          font-size: 28px;
-          color: #333;
+          font-size: 24px;
+          color: #222;
           margin-bottom: 5px;
           display: block;
         }
@@ -999,7 +1081,7 @@ const loadMore = () => {
         .playlist-cover {
           width: 200px;
           height: 200px;
-          border-radius: 10px;
+          border-radius: 8px;
           margin-bottom: 10px;
         }
 
@@ -1008,7 +1090,7 @@ const loadMore = () => {
           color: #333;
           display: block;
           white-space: normal;
-          margin-bottom: 5px;
+          margin-bottom: 2px;
         }
 
         .playlist-year {
@@ -1019,7 +1101,7 @@ const loadMore = () => {
     }
 
     .created-playlists {
-      background-color: #fff;
+      background-color: #ffffff;
       margin: 20px;
       border-radius: 20px;
       padding: 20px;
@@ -1046,6 +1128,10 @@ const loadMore = () => {
         display: flex;
         align-items: center;
         padding: 15px 0;
+        transition: background-color 0.3s ease;
+        &:hover{
+          background-color: #f8f8f8;
+        }
         border-bottom: 1px solid #eee;
 
         .playlist-cover {
@@ -1056,10 +1142,10 @@ const loadMore = () => {
         }
 
         .playlist-info {
-          flex: 1;
+          flex: 1 0 0;
 
           .playlist-name {
-            font-size: 28px;
+            font-size: 24px;
             color: #333;
             margin-bottom: 5px;
             display: block;
@@ -1074,7 +1160,7 @@ const loadMore = () => {
     }
 
     .recent-played {
-      background-color: #fff;
+      background-color: #ffffff;
       margin: 20px;
       border-radius: 20px;
       padding: 20px;
@@ -1083,7 +1169,7 @@ const loadMore = () => {
         margin-bottom: 20px;
 
         .section-title {
-          font-size: 32px;
+          font-size: 26px;
           font-weight: bold;
           color: #333;
         }
@@ -1092,6 +1178,10 @@ const loadMore = () => {
       .recent-item {
         display: flex;
         align-items: center;
+        transition: background-color 0.3s ease;
+        &:hover{
+          background-color: #f8f8f8;
+        }
         padding: 15px 0;
         border-bottom: 1px solid #eee;
 
@@ -1105,8 +1195,8 @@ const loadMore = () => {
         .recent-info {
           flex: 1;
 
-          .recent-name {
-            font-size: 28px;
+          .recent-name{
+            font-size: 24px;
             color: #333;
             margin-bottom: 5px;
             display: block;
@@ -1127,7 +1217,7 @@ const loadMore = () => {
     }
 
     .podcast-subscriptions, .podcast-episodes {
-      background-color: #fff;
+      background-color: #ffffff;
       margin: 20px;
       border-radius: 20px;
       padding: 20px;
@@ -1139,7 +1229,7 @@ const loadMore = () => {
         margin-bottom: 20px;
 
         .section-title {
-          font-size: 32px;
+          font-size: 26px;
           font-weight: bold;
           color: #333;
         }
@@ -1153,6 +1243,10 @@ const loadMore = () => {
       .podcast-item {
         display: flex;
         align-items: center;
+        transition: background-color 0.3s ease;
+        &:hover{
+          background-color: #f8f8f8;
+        }
         padding: 15px 0;
         border-bottom: 1px solid #eee;
 
@@ -1166,7 +1260,7 @@ const loadMore = () => {
         .podcast-info {
           flex: 1;
 
-          .podcast-name {
+          .podcast-name{
             font-size: 28px;
             color: #333;
             margin-bottom: 5px;
@@ -1188,6 +1282,10 @@ const loadMore = () => {
       .episode-item {
         display: flex;
         align-items: center;
+        transition: background-color 0.3s ease;
+        &:hover{
+          background-color: #f8f8f8;
+        }
         padding: 15px 0;
         border-bottom: 1px solid #eee;
 
@@ -1224,7 +1322,7 @@ const loadMore = () => {
     }
 
     .notes-list {
-      background-color: #fff;
+      background-color: #ffffff;
       margin: 20px;
       border-radius: 20px;
       padding: 20px;
@@ -1236,7 +1334,7 @@ const loadMore = () => {
         margin-bottom: 20px;
 
         .section-title {
-          font-size: 32px;
+          font-size: 26px;
           font-weight: bold;
           color: #333;
         }
@@ -1250,6 +1348,10 @@ const loadMore = () => {
       .note-item {
         padding: 15px 0;
         border-bottom: 1px solid #eee;
+        transition: background-color 0.3s ease;
+        &:hover{
+          background-color: #f8f8f8;
+        }
 
         .note-header {
           display: flex;
@@ -1338,18 +1440,27 @@ const loadMore = () => {
       bottom: 30px;
       width: 100px;
       height: 100px;
-      border-radius: 50px;
-      background-color: #1aad19;
+      border-radius: 50%;
+      background: linear-gradient(to right, #ff6e7f, #bfe9ff);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      &:active{
+        transform: scale(0.95);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+      }
 
-      .add-icon {
-        font-size: 50px;
+      .add-icon{
+        font-size: 40px;
         color: #fff;
       }
     }
   }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 </style>
