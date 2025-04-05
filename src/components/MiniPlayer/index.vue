@@ -2,7 +2,7 @@
   <view class="mini-player">
     <!-- 专辑封面 -->
     <view class="album-cover" @tap="navigateToPlayer">
-      <image :src="currentSong.cover" class="cover-image"/>
+      <image :src="currentSong.cover" class="cover-image" :class="{ 'rotating': isPlaying }"/>
     </view>
 
     <!-- 歌曲信息 -->
@@ -40,7 +40,7 @@
 <script setup lang="ts">
 import {ref, computed, onMounted, onUnmounted, watch} from 'vue'
 import Taro from '@tarojs/taro'
-import { audioService } from '../../services/audioService'
+import { audioService, Song } from '../../services/audioService'
 
 // 定义组件的props
 const props = defineProps({
@@ -88,6 +88,15 @@ watch(() => props.song, (newSong) => {
   }
 })
 
+// 监听audioService的当前歌曲变化
+watch(() => audioService.currentSong, (newSong) => {
+  if (newSong) {
+    // 同步当前状态
+    isPlaying.value = audioService.isPlaying
+    currentProgress.value = audioService.progress
+  }
+})
+
 // 切换播放/暂停状态
 const togglePlay = () => {
   if (!isPlaying.value) {
@@ -101,6 +110,8 @@ const togglePlay = () => {
 // 显示播放列表
 const showPlaylist = () => {
   emit('showPlaylist')
+  // 如果在全局状态管理中，可以直接打开播放列表
+  // 这里通过事件通知父组件处理
 }
 
 // 跳转到播放器详情页
@@ -125,7 +136,7 @@ onMounted(() => {
     isPlaying.value = false
   })
   
-  audioService.onTimeUpdate((currentTime, duration, progress) => {
+  audioService.onTimeUpdate((time, duration, progress) => {
     currentProgress.value = progress
   })
   
@@ -174,6 +185,20 @@ onUnmounted(() => {
       width: 100%;
       height: 100%;
       object-fit: cover;
+      border-radius: 50%;
+      
+      &.rotating {
+        animation: mini-rotate 20s linear infinite;
+      }
+    }
+    
+    @keyframes mini-rotate {
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform: rotate(360deg);
+      }
     }
   }
 

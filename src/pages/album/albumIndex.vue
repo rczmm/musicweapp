@@ -2,9 +2,6 @@
   <view class="album-page">
     <!-- 顶部导航栏 -->
     <view class="top-nav">
-      <view class="back-button" @tap="goBack">
-        <text class="back-icon">⟨</text>
-      </view>
       <view class="title">专辑详情</view>
       <view class="more-button" @tap="showMoreOptions">
         <text class="more-icon">⋮</text>

@@ -71,7 +71,7 @@
             <text>专辑精选</text>
           </view>
           <view class="album-list">
-            <scroll-view class="album-scroll" scroll-x>
+            <view class="album-scroll">
               <view
                 v-for="album in albumResults"
                 :key="album.id"
@@ -82,7 +82,7 @@
                 <text class="album-title">{{ album.title }}</text>
                 <text class="album-artist">{{ album.artist }}</text>
               </view>
-            </scroll-view>
+            </view>
           </view>
         </view>
         <view class="tab-content-item" v-if="currentIndex === 1">
@@ -359,7 +359,7 @@ onMounted(async () => {
     isPlaying.value = false;
   });
 
-  audioService.onTimeUpdate((currentTime, duration, progress) => {
+  audioService.onTimeUpdate((time, duration, progress) => {
     playProgress.value = progress;
   });
 
@@ -409,6 +409,14 @@ onUnmounted(() => {
 
 .tab-content-item {
   padding: 20px 20px;
+  
+  .album-scroll {
+    white-space: nowrap;
+    padding: 10px 0;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    display: flex;
+  }
 
   .desc {
     color: red;

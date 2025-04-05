@@ -7,6 +7,11 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
+    LyricScroller: typeof import('./src/components/LyricScroller/index.vue')['default']
     MiniPlayer: typeof import('./src/components/MiniPlayer/index.vue')['default']
+    NutButton: typeof import('@nutui/nutui-taro')['Button']
+    NutSearchbar: typeof import('@nutui/nutui-taro')['Searchbar']
+    NutTag: typeof import('@nutui/nutui-taro')['Tag']
+    PlaylistPanel: typeof import('./src/components/PlaylistPanel/index.vue')['default']
   }
 }

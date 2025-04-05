@@ -1,4 +1,5 @@
 import Taro from '@tarojs/taro';
+import { defaultDataService } from './defaultDataService';
 
 // 定义歌曲接口
 export interface Song {
@@ -9,6 +10,7 @@ export interface Song {
   duration: number;
   url?: string; // 音频URL
   audioUrl?: string; // 兼容现有代码中的两种URL属性名
+  fallbackUrl?: string; // 备用音频URL，当主URL加载失败时使用
 }
 
 // 播放模式枚举
@@ -122,6 +124,18 @@ class AudioService {
     
     this._currentSong = song;
     this.audioContext.src = audioSource;
+    
+    // 添加错误处理，当主音频URL加载失败时使用备用URL
+    this.audioContext.onError((error) => {
+      console.error('音频加载失败:', error);
+      if (song.fallbackUrl && this.audioContext) {
+        console.log('使用备用音频URL:', song.fallbackUrl);
+        this.audioContext.src = song.fallbackUrl;
+        this.audioContext.play();
+      }
+      this.onErrorCallbacks.forEach(callback => callback(error));
+    });
+    
     this.audioContext.play();
   }
   

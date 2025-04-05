@@ -2,9 +2,6 @@
   <view class="playlist-page">
     <!-- 顶部导航栏 -->
     <view class="top-nav">
-      <view class="back-button" @tap="goBack">
-        <text class="back-icon">⟨</text>
-      </view>
       <view class="title">歌单详情</view>
       <view class="more-button" @tap="showMoreOptions">
         <text class="more-icon">⋮</text>
@@ -81,7 +78,7 @@
         <text class="more-text">更多 ></text>
       </view>
 
-      <scroll-view class="similar-playlists" scroll-x>
+      <view class="similar-playlists">
         <view
           v-for="(playlist, index) in similarPlaylists"
           :key="playlist.id"
@@ -92,7 +89,7 @@
           <text class="similar-playlist-title">{{ playlist.title }}</text>
           <text class="similar-playlist-creator">by {{ playlist.creator }}</text>
         </view>
-      </scroll-view>
+      </view>
     </view>
 
     <!-- 迷你播放器组件 -->
@@ -328,7 +325,7 @@ onMounted(() => {
 .top-nav {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   padding: 20rpx;
   background: linear-gradient(to right, #ff2c54, #ff6b81);
   color: #fff;
@@ -336,14 +333,14 @@ onMounted(() => {
   top: 0;
   z-index: 100;
 
-  .back-button, .more-button {
+  .more-button {
     width: 60rpx;
     height: 60rpx;
     display: flex;
     align-items: center;
     justify-content: center;
 
-    .back-icon, .more-icon {
+    .more-icon {
       font-size: 40rpx;
     }
   }
@@ -556,6 +553,9 @@ onMounted(() => {
   .similar-playlists {
     white-space: nowrap;
     margin: 0 -10rpx;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 10rpx 0;
 
     .similar-playlist-item {
       display: inline-block;

@@ -1,5 +1,6 @@
 import Taro from '@tarojs/taro';
 import {Song} from './audioService';
+import {defaultDataService} from './defaultDataService';
 
 // 定义API返回的歌单数据结构
 interface ApiPlaylist {
@@ -62,7 +63,8 @@ class MusicService {
       return this.convertApiSongsToSongs(response.data);
     } catch (error) {
       console.error('获取歌曲列表失败:', error);
-      return [];
+      // 返回默认歌曲数据
+      return defaultDataService.getDefaultSongs();
     }
   }
 
@@ -86,7 +88,16 @@ class MusicService {
       return this.convertApiSongsToSongs(response.data);
     } catch (error) {
       console.error('搜索歌曲失败:', error);
-      return [];
+      // 返回默认歌曲数据，可以根据关键词进行简单过滤
+      const defaultSongs = defaultDataService.getDefaultSongs();
+      if (!keyword) return defaultSongs;
+      
+      // 简单的关键词匹配
+      const lowerKeyword = keyword.toLowerCase();
+      return defaultSongs.filter(song => 
+        song.title.toLowerCase().includes(lowerKeyword) || 
+        song.artist.toLowerCase().includes(lowerKeyword)
+      );
     }
   }
 
@@ -107,7 +118,8 @@ class MusicService {
       return this.convertApiPlaylistsToPlaylists(response.data);
     } catch (error) {
       console.error('获取歌单列表失败:', error);
-      return [];
+      // 返回默认歌单数据
+      return defaultDataService.getDefaultPlaylists();
     }
   }
 
@@ -121,7 +133,9 @@ class MusicService {
       return playlist || null;
     } catch (error) {
       console.error('获取歌单详情失败:', error);
-      return null;
+      // 返回默认歌单详情
+      return defaultDataService.getDefaultPlaylistById(playlistId) || 
+             defaultDataService.getDefaultPlaylists()[0] || null;
     }
   }
 
@@ -141,7 +155,8 @@ class MusicService {
       // 检查API返回的数据格式
       if (!response.data) {
         console.error('API返回的数据为空');
-        return [];
+        // 返回默认歌曲列表
+        return defaultDataService.getDefaultPlaylistSongs(playlistId.toString());
       }
 
       // 如果返回的是对象而不是数组，尝试从对象中提取歌曲数组
@@ -155,9 +170,9 @@ class MusicService {
         } else if (response.data.result) {
           songsData = response.data.result;
         } else {
-          // 如果无法找到歌曲数组，记录错误并返回空数组
+          // 如果无法找到歌曲数组，记录错误并返回默认歌曲列表
           console.error('无法从API响应中提取歌曲数组:', response.data);
-          return [];
+          return defaultDataService.getDefaultPlaylistSongs(playlistId.toString());
         }
       }
 
@@ -165,7 +180,8 @@ class MusicService {
       return this.convertApiSongsToSongs(songsData);
     } catch (error) {
       console.error('获取歌单歌曲列表失败:', error);
-      return [];
+      // 返回默认歌曲列表
+      return defaultDataService.getDefaultPlaylistSongs(playlistId.toString());
     }
   }
 
