@@ -233,7 +233,6 @@ import {defaultDataService} from "../../services/defaultDataService";
 
 const searchKeyword = ref<string>('');
 const currentIndex = ref<number>(0);
-const currentTab = ref('songs'); // 当前标签页：songs, albums, playlists
 const currentPlayingSong = ref({
   id: '1',
   title: '来日方长',
