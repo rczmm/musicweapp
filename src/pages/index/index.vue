@@ -1,4 +1,5 @@
 <template>
+  <SplashScreen />
   <view class="index">
     <!-- 搜索栏区域 -->
     <view class="search-bar">
