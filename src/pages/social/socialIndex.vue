@@ -24,7 +24,7 @@
           :refresher-triggered="isRefreshing"
           @refresherrefresh="onRefresh">
       <!-- 内容卡片 -->
-      <view v-for="(item, index) in contentList" :key="index" class="content-card">
+      <view v-for="(item, index) in contentList" :key="index" class="content-card" :style="{animation: `fadeIn 0.5s ease forwards ${index * 0.1}s`}">
         <!-- 卡片头部：用户信息 -->
         <view class="card-header">
           <view class="user-info">
@@ -347,7 +347,8 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  background-color: #f5f5f5;
+  background-color: #f8f8f8;
+  background-image: linear-gradient(to bottom, rgba(255, 0, 0, 0.02), rgba(255, 0, 0, 0.01));
 }
 
 .top-nav {
@@ -359,7 +360,9 @@ onMounted(() => {
   position: sticky;
   top: 0;
   z-index: 100;
-  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.08);
+  border-bottom: 1rpx solid rgba(255, 0, 0, 0.1);
+  transition: box-shadow 0.3s ease;
 
   .tab-item {
     position: relative;
@@ -410,6 +413,11 @@ onMounted(() => {
   flex: 1;
   padding: 20rpx;
   box-sizing: border-box;
+  transition: opacity 0.3s ease;
+  
+  &.refreshing {
+    opacity: 0.7;
+  }
 }
 
 .custom-scroll-container {
@@ -418,6 +426,17 @@ onMounted(() => {
   -webkit-overflow-scrolling: touch; /* 启用弹性滚动（iOS） */
   scroll-behavior: smooth;
   overscroll-behavior: contain; /* 防止父级滚动 */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 0, 0, 0.3) transparent;
+  
+  &::-webkit-scrollbar {
+    width: 6rpx;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 0, 0, 0.3);
+    border-radius: 3rpx;
+  }
 }
 
 .content-card {
@@ -425,7 +444,14 @@ onMounted(() => {
   border-radius: 20rpx;
   padding: 30rpx;
   margin-bottom: 30rpx;
-  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+  box-shadow: 0 6rpx 16rpx rgba(0, 0, 0, 0.08);
+  border: 1rpx solid rgba(255, 0, 0, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  
+  &:active {
+    transform: scale(0.98);
+    box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
+  }
 }
 
 .card-header {
@@ -444,6 +470,14 @@ onMounted(() => {
       border-radius: 50%;
       margin-right: 20rpx;
       object-fit: fill;
+      border: 2rpx solid rgba(255, 0, 0, 0.2);
+      box-shadow: 0 4rpx 8rpx rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      
+      &:active {
+        transform: scale(0.95);
+        box-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.1);
+      }
     }
 
     .user-details {
@@ -494,8 +528,15 @@ onMounted(() => {
     .media-image {
       width: 100%;
       height: 400rpx;
-      border-radius: 10rpx;
+      border-radius: 16rpx;
       object-fit: cover;
+      box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease, filter 0.3s ease;
+      
+      &:active {
+        transform: scale(0.98);
+        filter: brightness(0.95);
+      }
 
       &:only-child {
         width: 100%;
@@ -505,16 +546,25 @@ onMounted(() => {
     .media-video {
       width: 100%;
       height: 400rpx;
-      border-radius: 10rpx;
+      border-radius: 16rpx;
+      box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.1);
     }
   }
 
   .article-preview {
     display: flex;
     background-color: #f9f9f9;
-    border-radius: 10rpx;
+    border-radius: 16rpx;
     padding: 20rpx;
     margin-bottom: 20rpx;
+    box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.08);
+    border-left: 4rpx solid #ff0000;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    
+    &:active {
+      transform: translateX(4rpx);
+      box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.06);
+    }
 
     .article-info {
       flex: 1;
@@ -542,17 +592,30 @@ onMounted(() => {
     .article-cover {
       width: 160rpx;
       height: 120rpx;
-      border-radius: 8rpx;
+      border-radius: 12rpx;
       object-fit: cover;
+      box-shadow: 0 2rpx 6rpx rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s ease;
+      
+      &:active {
+        transform: scale(0.95);
+      }
     }
   }
 
   .quote-container {
     background-color: #f5f5f5;
-    border-left: 8rpx solid #ddd;
+    border-left: 8rpx solid #ff0000;
     padding: 20rpx 30rpx;
     margin-bottom: 20rpx;
-    border-radius: 0 10rpx 10rpx 0;
+    border-radius: 0 16rpx 16rpx 0;
+    box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.06);
+    transition: transform 0.2s ease, border-left-width 0.2s ease;
+    
+    &:active {
+      transform: translateX(4rpx);
+      border-left-width: 12rpx;
+    }
 
     .quote-text {
       font-size: 28rpx;
@@ -582,20 +645,30 @@ onMounted(() => {
     display: flex;
     align-items: center;
     padding: 10rpx 20rpx;
+    border-radius: 30rpx;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+    
+    &:active {
+      transform: scale(0.9);
+      background-color: rgba(255, 0, 0, 0.05);
+    }
 
     .icon {
       font-size: 36rpx;
       color: #999;
       margin-right: 10rpx;
+      transition: transform 0.3s ease, color 0.3s ease;
 
       &.liked {
         color: #ff0000;
+        transform: scale(1.2);
       }
     }
 
     .count {
       font-size: 24rpx;
       color: #999;
+      transition: color 0.3s ease;
     }
   }
 }
@@ -605,5 +678,21 @@ onMounted(() => {
   padding: 20rpx 0;
   color: #999;
   font-size: 24rpx;
+  animation: pulse 1.5s infinite ease-in-out;
+}
+
+@keyframes pulse {
+  0% { opacity: 0.6; }
+  50% { opacity: 1; }
+  100% { opacity: 0.6; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20rpx); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.refreshing {
+  transition: transform 0.3s ease;
 }
 </style>
