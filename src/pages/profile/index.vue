@@ -318,6 +318,14 @@
 import { ref } from 'vue'
 import Taro from '@tarojs/taro'
 
+// 动画和加载状态变量
+const isLoading = ref(false);
+const isMusicLoading = ref(false);
+const isPodcastLoading = ref(false);
+const slideDirection = ref('slide-left');
+const musicSlideDirection = ref('slide-left');
+const podcastSlideDirection = ref('slide-left');
+
 // 用户信息
 const userInfo = ref<any>({
   username: '音乐达人',
@@ -529,10 +537,8 @@ const openSettings = () => {
 
 // 2. editProfile: 编辑个人资料，目前提示“即将上线”。
 const editProfile = () => {
-  Taro.showToast({
-    title: '编辑个人资料功能即将上线',
-    icon: 'none',
-    duration: 2000
+  Taro.navigateTo({
+    url: '/pages/profile/edit'
   })
 }
 
@@ -557,17 +563,74 @@ const subscribeVip = () => {
 
 // 4. switchTab: 切换顶部主标签页。
 const switchTab = (tabId: string) => {
-  currentTab.value = tabId // 将当前选中的主标签页ID设置为传入的tabId
+  if (currentTab.value === tabId) return; // 如果点击当前标签，不执行切换
+  
+  // 设置加载状态
+  isLoading.value = true;
+  
+  // 设置滑动方向
+  const tabs = ['music', 'podcast', 'notes'];
+  const currentIndex = tabs.indexOf(currentTab.value);
+  const newIndex = tabs.indexOf(tabId);
+  slideDirection.value = newIndex > currentIndex ? 'slide-left' : 'slide-right';
+  
+  // 添加延迟以显示动画效果
+  setTimeout(() => {
+    currentTab.value = tabId; // 将当前选中的主标签页ID设置为传入的tabId
+    
+    // 模拟加载完成
+    setTimeout(() => {
+      isLoading.value = false;
+    }, 300);
+  }, 100);
 }
 
 // 5. switchMusicTab: 切换音乐子标签页。
 const switchMusicTab = (tabId: string) => {
-  currentMusicTab.value = tabId // 将当前选中的音乐子标签页ID设置为传入的tabId
+  if (currentMusicTab.value === tabId) return; // 如果点击当前标签，不执行切换
+  
+  // 设置加载状态
+  isMusicLoading.value = true;
+  
+  // 设置滑动方向
+  const tabs = ['recent', 'created', 'collection'];
+  const currentIndex = tabs.indexOf(currentMusicTab.value);
+  const newIndex = tabs.indexOf(tabId);
+  musicSlideDirection.value = newIndex > currentIndex ? 'slide-left' : 'slide-right';
+  
+  // 添加延迟以显示动画效果
+  setTimeout(() => {
+    currentMusicTab.value = tabId; // 将当前选中的音乐子标签页ID设置为传入的tabId
+    
+    // 模拟加载完成
+    setTimeout(() => {
+      isMusicLoading.value = false;
+    }, 300);
+  }, 100);
 }
 
 // 6. switchPodcastTab: 切换播客子标签页。
 const switchPodcastTab = (tabId: string) => {
-  currentPodcastTab.value = tabId // 将当前选中的播客子标签页ID设置为传入的tabId
+  if (currentPodcastTab.value === tabId) return; // 如果点击当前标签，不执行切换
+  
+  // 设置加载状态
+  isPodcastLoading.value = true;
+  
+  // 设置滑动方向
+  const tabs = ['subscribed', 'episodes'];
+  const currentIndex = tabs.indexOf(currentPodcastTab.value);
+  const newIndex = tabs.indexOf(tabId);
+  podcastSlideDirection.value = newIndex > currentIndex ? 'slide-left' : 'slide-right';
+  
+  // 添加延迟以显示动画效果
+  setTimeout(() => {
+    currentPodcastTab.value = tabId; // 将当前选中的播客子标签页ID设置为传入的tabId
+    
+    // 模拟加载完成
+    setTimeout(() => {
+      isPodcastLoading.value = false;
+    }, 300);
+  }, 100);
 }
 
 // 7. formatListenTime: 格式化听歌时长，将秒数转换为天数。
@@ -728,62 +791,75 @@ const loadMore = () => {
 
 <style lang="scss">
 .profile-page {
-  min-height: 100vh;
   background-color: #f8f8f8;
+  min-height: 100vh;
+  padding-bottom: 100px;
+  color-scheme: light;
 
   .top-nav {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
-    height: 80px;
-    padding: 20px 30px;
+    padding: 20px;
+    position: relative;
     background-color: #fff;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 2px 10px rgba(255, 78, 78, 0.05);
+
+    .title {
+      font-size: 36px;
+      font-weight: bold;
+      color: #ff4e4e;
+      text-shadow: 0 1px 2px rgba(255, 78, 78, 0.1);
+    }
 
     .settings-button {
+      position: absolute;
+      right: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 60px;
+      height: 60px;
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-left: auto;
-      background-color: #f5f5f5;
       border-radius: 50%;
-      width: 40px;
-      height: 40px;
       transition: background-color 0.3s ease;
 
       &:active {
-        background-color: #e0e0e0;
+        background-color: rgba(255, 78, 78, 0.1);
       }
 
       .settings-icon {
-        font-size: 24px;
-        color: #555;
+        font-size: 40px;
+        color: #ff4e4e;
       }
     }
-
-    .title {
-      font-size: 28px;
-      font-weight: bold;
-      color: #222;
-    }
-
   }
 
   .user-info-section {
     background-color: #fff;
-    padding: 30px 20px;
+    margin: 15px;
+    border-radius: 20px;
+    padding: 20px 25px;
+    box-shadow: 0 4px 15px rgba(255, 78, 78, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+    &:active {
+      transform: translateY(2px);
+      box-shadow: 0 2px 10px rgba(255, 78, 78, 0.08);
+    }
 
     .user-header {
       display: flex;
-      flex-direction: row;
       align-items: center;
-      margin-bottom: 30px;
 
       .user-avatar {
         width: 120px;
         height: 120px;
         border-radius: 60px;
-        margin-right: 10px;
+        margin-right: 15px;
+        box-shadow: 0 4px 10px rgba(255, 78, 78, 0.15);
+        border: 3px solid rgba(255, 255, 255, 0.8);
       }
 
       .user-details {
@@ -801,16 +877,18 @@ const loadMore = () => {
           margin-bottom: 10px;
 
           .username {
-            font-size: 30px;
+            font-size: 32px;
             font-weight: bold;
-            color: #222;
+            color: #ff4e4e;
             margin-right: 10px;
+            text-shadow: 0 1px 2px rgba(255, 78, 78, 0.1);
           }
           }
 
           .vip-badge {
             width: 30px;
             height: 30px;
+            animation: pulse 2s infinite;
           }
         }
 
@@ -830,28 +908,36 @@ const loadMore = () => {
       display: flex;
       justify-content: space-around;
       padding: 20px 0;
+      border-top: 1px solid rgba(255, 78, 78, 0.1);
 
       .stat-item {
         text-align: center;
+        transition: transform 0.3s ease;
+        
+        &:active {
+          transform: scale(1.05);
+        }
 
         .stat-value {
-          font-size: 26px;
-          color: #222;
+          font-size: 28px;
+          color: #ff4e4e;
           margin-bottom: 8px;
           display: block;
+          font-weight: bold;
         }
 
         .stat-label {
           font-size: 22px;
-          color: #666;
+          color: #999;
         }
       }
     }
 
     .edit-profile-button {
-      background: linear-gradient(to right, #ff6e7f, #bfe9ff);
+      background: linear-gradient(45deg, #ff4e4e, #ff7676);
       margin: 20px auto 0;
-      padding: 8px 20px;
+      padding: 12px 30px;
+      border-radius: 25px;
       border-radius: 25px;
       border: none;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -869,7 +955,7 @@ const loadMore = () => {
 
       text {
         font-size: 28px;
-        color: #333;
+        color: #fff;
       }
     }
   }
@@ -898,33 +984,49 @@ const loadMore = () => {
   }
 
   .vip-privileges {
-    background: linear-gradient(to right, #ff9a9e, #fad0c4);
+    background: linear-gradient(135deg, #ff4e4e, #ff9a9e);
+    background-size: 200% 200%;
+    animation: gradientAnimation 8s ease infinite;
     margin: 15px;
-    border-radius: 15px;
+    border-radius: 20px;
     padding: 20px 25px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 8px 20px rgba(255, 78, 78, 0.2);
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 60%);
+      animation: shimmer 6s linear infinite;
+      pointer-events: none;
+    }
 
     .privilege-header {
       margin-bottom: 20px;
 
       .privilege-title {
-        font-size: 26px;
+        font-size: 28px;
         font-weight: bold;
-        color: #eee;
+        color: #fff;
         display: block;
         margin-bottom: 5px;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
       }
 
       .privilege-subtitle {
-        font-size: 20px;
-        color: #fff;
+        font-size: 22px;
+        color: rgba(255, 255, 255, 0.8);
       }
     }
 
     .privilege-list {
       display: flex;
       flex-wrap: wrap;
-
 
       .privilege-item {
         display: flex;
@@ -933,65 +1035,112 @@ const loadMore = () => {
         justify-content: center;
         width: 25%;
         margin-bottom: 15px;
+        transition: transform 0.3s ease, opacity 0.3s ease;
+        
+        &:active {
+          transform: scale(1.1);
+        }
 
         .privilege-icon {
-          width: 50px;
-          height: 50px;
-          margin-bottom: 8px;
+          width: 60px;
+          height: 60px;
+          margin-bottom: 10px;
+          filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+          transition: transform 0.3s ease;
         }
 
         .privilege-name {
-          font-size: 18px;
-          color: #eee;
+          font-size: 20px;
+          color: #fff;
+          text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        &:hover .privilege-icon {
+          transform: translateY(-5px);
         }
       }
     }
   }
 
   .vip-subscription {
-    background: linear-gradient(to right, #a1c4fd, #c2e9fb);
+    background: linear-gradient(135deg, #ff7676, #ff4e4e);
+    background-size: 200% 200%;
+    animation: gradientAnimation 8s ease infinite;
     margin: 15px;
-    border-radius: 15px;
+    border-radius: 20px;
     padding: 20px 25px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 8px 20px rgba(255, 78, 78, 0.2);
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 60%);
+      animation: shimmer 6s linear infinite;
+      pointer-events: none;
+    }
 
     .subscription-content {
       display: flex;
       justify-content: space-between;
       align-items: center;
 
-
       .subscription-info {
-
         .subscription-title {
           font-size: 32px;
           font-weight: bold;
-          color: #333;
+          color: #fff;
           display: block;
           margin-bottom: 5px;
+          text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
 
         .subscription-desc {
           font-size: 24px;
-          color: #999;
+          color: rgba(255, 255, 255, 0.8);
         }
       }
 
       .subscription-button {
-        padding: 10px 20px;
+        padding: 12px 30px;
         background: #fff;
-        color: #222;
-        border-radius: 25px;
+        border-radius: 30px;
         transition: transform 0.3s ease, box-shadow 0.3s ease;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        position: relative;
+        overflow: hidden;
+        z-index: 1;
+
+        &::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(45deg, rgba(255,255,255,0.1), rgba(255,255,255,0.3));
+          z-index: -1;
+          transition: opacity 0.3s ease;
+        }
 
         &:active {
-          transform: scale(0.95);
-          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+          transform: scale(0.95) translateY(2px);
+          box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        &:active::before {
+          opacity: 0.5;
         }
 
         text {
           font-size: 28px;
-          color: #fff;
+          color: #ff4e4e;
+          font-weight: bold;
         }
       }
     }
@@ -1002,31 +1151,45 @@ const loadMore = () => {
     display: flex;
     background-color: #fff;
     padding: 0 20px;
-    border-bottom: 1px solid #f0f0f0;
-    transition: border-color 0.3s ease;
+    border-bottom: 1px solid rgba(255, 78, 78, 0.1);
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 10px rgba(255, 78, 78, 0.05);
+    position: relative;
+    z-index: 10;
 
     .tab-item {
       padding: 15px 20px;
       font-size: 24px;
       color: #888;
       position: relative;
-      transition: color 0.3s ease;
+      transition: all 0.3s ease;
+      overflow: hidden;
+
+      &::before {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 0;
+        height: 3px;
+        background: linear-gradient(to right, #ff4e4e, #ff7676);
+        border-radius: 3px;
+        transition: width 0.3s ease;
+      }
 
       &.active {
-        color: #222;
+        color: #ff4e4e;
         font-weight: bold;
 
-        &::after {
-          content: '1';
-          position: absolute;
-          bottom: 0;
-          left: 50%;
-          transform: translateX(-50%);
-          width: 50%;
-          height: 3px;
-          background: linear-gradient(to right, #ff6e7f, #bfe9ff);
-          border-radius: 1px;
+        &::before {
+          width: 60%;
+          animation: tabIndicator 0.3s ease forwards;
         }
+      }
+
+      &:active {
+        transform: scale(0.95);
       }
     }
   }
@@ -1035,11 +1198,12 @@ const loadMore = () => {
     height: calc(100vh - 400px);
     overflow-y: scroll;
     -webkit-overflow-scrolling: touch;
-    transition: opacity 0.3s ease;
+    transition: all 0.5s ease;
+    position: relative;
 
     &.fade-in {
       opacity: 0;
-      animation: fadeIn 0.3s ease forwards;
+      animation: fadeIn 0.5s ease forwards;
     }
 
     .sub-tabs {
@@ -1047,23 +1211,45 @@ const loadMore = () => {
       padding: 15px 20px;
       background-color: #fff;
       white-space: nowrap;
-      transition: border-color 0.3s ease;
-
-
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 10px rgba(255, 78, 78, 0.05);
+      position: sticky;
+      top: 0;
+      z-index: 5;
 
       .sub-tab-item{
-        padding: 10px 20px;
+        padding: 12px 24px;
         margin-right: 20px;
         font-size: 20px;
         color: #777;
         background-color: #f8f8f8;
-        border-radius: 20px;
-        transition: background-color 0.3s ease, color 0.3s ease;
-
+        border-radius: 25px;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        position: relative;
+        overflow: hidden;
+        
+        &::after {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(45deg, rgba(255,255,255,0.1), rgba(255,255,255,0.3));
+          opacity: 0;
+          transition: opacity 0.3s ease;
+        }
       
         &.active {
           color: #fff;
-          background: linear-gradient(to right, #ff6e7f, #bfe9ff);
+          background: linear-gradient(45deg, #ff4e4e, #ff7676);
+          box-shadow: 0 4px 10px rgba(255, 78, 78, 0.2);
+          transform: translateY(-2px);
+        }
+        
+        &:active::after {
+          opacity: 1;
         }
       }
     }
@@ -1073,6 +1259,27 @@ const loadMore = () => {
       margin: 20px;
       border-radius: 20px;
       padding: 20px;
+      box-shadow: 0 4px 15px rgba(255, 78, 78, 0.08);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      position: relative;
+      overflow: hidden;
+
+      &:active {
+        transform: translateY(2px);
+        box-shadow: 0 2px 8px rgba(255, 78, 78, 0.05);
+      }
+
+      &::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 5px;
+        height: 100%;
+        background: linear-gradient(to bottom, #ff4e4e, #ff7676);
+        border-top-left-radius: 20px;
+        border-bottom-left-radius: 20px;
+      }
 
       .section-header {
         display: flex;
@@ -1083,34 +1290,42 @@ const loadMore = () => {
         .section-title {
           font-size: 26px;
           font-weight: bold;
-          color: #222;
+          color: #ff4e4e;
+          position: relative;
+          padding-left: 15px;
         }
 
         .song-count {
           font-size: 24px;
           color: #999;
+          background-color: rgba(255, 78, 78, 0.1);
+          padding: 5px 12px;
+          border-radius: 15px;
         }
       }
     }
 
     .song-item {
       background-color: #fff;
-      transition: background-color 0.3s ease;
+      transition: all 0.3s ease;
       display: flex;
       align-items: center;
-      padding: 10px 0;
+      padding: 15px 10px;
+      margin-bottom: 10px;
+      border-radius: 15px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 
-      &:hover {
-        background-color: #f8f8f8;
+      &:active {
+        background-color: rgba(255, 78, 78, 0.05);
+        transform: scale(0.98);
       }
-
-      border-bottom: 1px solid #eee;
 
       .song-cover {
         width: 80px;
         height: 80px;
-        border-radius: 10px;
+        border-radius: 15px;
         margin-right: 15px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
       }
 
       .song-info {
@@ -1118,20 +1333,34 @@ const loadMore = () => {
 
         .song-name {
           font-size: 24px;
-          color: #222;
-          margin-bottom: 5px;
+          color: #333;
+          margin-bottom: 8px;
           display: block;
+          font-weight: 500;
         }
 
         .song-artist {
-          font-size: 24px;
+          font-size: 22px;
           color: #999;
         }
       }
 
       .play-icon {
         font-size: 36px;
-        color: #1aad19;
+        color: #ff4e4e;
+        width: 60px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background-color: rgba(255, 78, 78, 0.1);
+        transition: all 0.3s ease;
+        
+        &:active {
+          background-color: rgba(255, 78, 78, 0.2);
+          transform: scale(0.9);
+        }
       }
     }
 
@@ -1540,18 +1769,145 @@ const loadMore = () => {
   }
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
 
 .custom-scroll-container {
     overflow-x: auto;
     overflow-y: hidden;
     white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    position: relative;
+    
+    &::-webkit-scrollbar {
+      display: none;
+    }
+}
+
+/* 加载状态视觉反馈 */
+.loading-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 0;
+  
+  .loading-dots {
+    display: flex;
+    align-items: center;
+    
+    .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background-color: #ff4e4e;
+      margin: 0 5px;
+      animation: loadingPulse 1.5s infinite ease-in-out;
+      
+      &:nth-child(2) {
+        animation-delay: 0.2s;
+      }
+      
+      &:nth-child(3) {
+        animation-delay: 0.4s;
+      }
+    }
+  }
+}
+
+/* 动画关键帧定义 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes gradientAnimation {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes loadingPulse {
+  0%, 100% {
+    transform: scale(0.8);
+    opacity: 0.6;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+}
+
+@keyframes tabIndicator {
+  0% {
+    width: 0;
+    opacity: 0;
+  }
+  100% {
+    width: 60%;
+    opacity: 1;
+  }
+}
+
+/* 滑动动画效果 */
+.slide-left-enter-active,
+.slide-right-enter-active,
+.slide-left-leave-active,
+.slide-right-leave-active {
+  transition: all 0.3s ease;
+}
+
+.slide-left-enter-from {
+  transform: translateX(100%);
+  opacity: 0;
+}
+
+.slide-left-leave-to {
+  transform: translateX(-100%);
+  opacity: 0;
+}
+
+.slide-right-enter-from {
+  transform: translateX(-100%);
+  opacity: 0;
+}
+
+.slide-right-leave-to {
+  transform: translateX(100%);
+  opacity: 0;
 }
 </style>

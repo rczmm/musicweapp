@@ -6,6 +6,7 @@ export default {
     'pages/create-post/index',
     'pages/comments/index',
     'pages/profile/index',
+    'pages/profile/edit',
     'pages/playlist/index',
     'pages/album/albumIndex',
     'pages/search/index',
@@ -18,7 +19,7 @@ export default {
   },
   tabBar: {
     color: '#999',
-    selectedColor: '#1aad19',
+    selectedColor: '#ff4e4e',
     backgroundColor: '#fff',
     list: [
       {

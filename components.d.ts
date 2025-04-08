@@ -10,9 +10,6 @@ declare module 'vue' {
     Demo: typeof import('./src/components/SplashScreen/demo.vue')['default']
     LyricScroller: typeof import('./src/components/LyricScroller/index.vue')['default']
     MiniPlayer: typeof import('./src/components/MiniPlayer/index.vue')['default']
-    NutButton: typeof import('@nutui/nutui-taro')['Button']
-    NutSearchbar: typeof import('@nutui/nutui-taro')['Searchbar']
-    NutTag: typeof import('@nutui/nutui-taro')['Tag']
     PlaylistPanel: typeof import('./src/components/PlaylistPanel/index.vue')['default']
     SplashScreen: typeof import('./src/components/SplashScreen/index.vue')['default']
   }
